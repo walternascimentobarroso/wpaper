@@ -1,13 +1,20 @@
-\documentclass[11pt]{article}
+% Define o tipo e o tamanho do documento
+\documentclass[12pt]{article}
+% Define o charset do documento
 \usepackage[utf8]{inputenc}
+% Define o pais do documento
 \usepackage[english]{babel}
 
+% Inicia o documento
 \begin{document}
-Ola Mundo!
 
-dasd
-\\\\\\
-asdasd
 
-asdasd
+referencias:
+http://www.guj.com.br/t/duvida-gerar-id-com-system-uuid-somente-com-numeros/172234
+https://nandovieira.com.br/usando-uuid-no-postgresql-com-activerecord
+https://www.vivaolinux.com.br/topico/Ubuntu-e-Kubuntu/Saber-o-UUID-de-um-HD
+http://tdn.totvs.com/display/tec/Troca+de+ID+de+sessao+de+terminal+por+um+UUID
+http://www.itexto.net/devkico/?p=53
+
+% Finaliza o documento
 \end{document}
