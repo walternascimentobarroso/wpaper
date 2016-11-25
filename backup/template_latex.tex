@@ -1,0 +1,500 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% LaTeX Template
+% Versão 1.0 (29/05/15)
+%  
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\documentclass[pdftex,12pt,a4paper]{article} % Esta deve ser SEMPRE a primeira linha
+% válida no documento.
+% Tudo que estiver na linha depois do símbolo % é comentário
+%----------------------------------------------------------------------------------------
+%	Configurações e pacotes utilizados no manuscrito
+%----------------------------------------------------------------------------------------
+% Este são os pacotes utilizados no documento. Dependendo da necessidade, você pode
+% acrescentar or remove-los
+\usepackage[pdftex]{graphicx}
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[brazil]{babel}
+%\usepackage{pslatex}
+%\usepackage{pdfpages}
+\usepackage{achicago}
+\usepackage{framed}
+\usepackage{color}
+
+\renewcommand{\baselinestretch}{1.2}
+%\paperwidth 8.26in % A4 (210 mm)
+%\paperheight 11.69in % A4 (297 mm)
+%\textwidth 6.26in
+%\textheight 9.7in
+%\columnsep 0.0in
+%\oddsidemargin .0in
+%\topmargin -.2in
+%\headheight 0in
+%\headsep 0in
+%\topskip 0in
+ 
+% for fancyboxes
+\setlength{\fboxrule}{0.2mm}
+\setlength{\fboxsep}{2ex}
+
+%----------------------------------------------------------------------------------------
+% Coloca a tabela ou a figura no local onde você quer.
+\makeatletter
+\newenvironment{tablehere}
+  {\def\@captype{table}} {}
+ 
+\newenvironment{figurehere}
+  {\def\@captype{figure}}
+  {}
+\makeatother 
+
+%----------------------------------------------------------------------------------------
+% Em caso do latex não conseguir fazer a separação silábica corretamente, defina aqui:
+\hyphenation{des-cri-tos}
+\hyphenation{in-ter-na-cio-nal}
+
+\begin{document}
+\pagestyle{empty}
+%----------------------------------------------------------------------------------------
+%	Capa  ou página com o título.
+%----------------------------------------------------------------------------------------
+
+\title{\Large Modelo básico para produzir um artigo em Latex}
+\author{\large Olga Sato\thanks{olga.sato@usp.br} \hspace{.25cm} \\
+Departamento de Oceanografia Física, Química e Geológica \\
+Instituto Oceanogr\'afico - Universidade De S\~ao Paulo\\
+São Paulo, SP}
+\date{\today}
+\thispagestyle{empty}
+\maketitle
+\normalsize
+
+%----------------------------------------------------------------------------------------
+% Comando para mudar de página.
+%
+\newpage
+
+%----------------------------------------------------------------------------------------
+% Criar uma página com o sumário. Se não quiser, é só comentar as linhas.
+%\thispagestyle{empty}
+%\tableofcontents
+%\thispagestyle{empty}
+%\pagestyle{plain}
+
+%----------------------------------------------------------------------------------------
+%	ABSTRACT PAGE
+%----------------------------------------------------------------------------------------
+\begin{center}
+{\Large Modelo básico para produzir um artigo em Latex}
+\end{center}
+
+\vspace{-.25in}
+\noindent\hrulefill
+
+\vspace{.5in}
+
+\centerline{\large Olga T. Sato}
+
+\begin{abstract}
+
+  Este é um curso básico sobre como utilizar o {\bf latex} para
+  produzir um documento de altíssima qualidade tipográfica.  O latex é
+  um programa que processa uma série de comandos e definições
+  colocados num texto e transforma--os num documento com qualidade
+  compatível com aquela encontrada em livros e artigos científicos
+  publicados.
+
+  O intuito deste curso não é fornecer um guia completo com todos as
+  capacidades que o latex proporciona. Isso é impossível. Para isso,
+  verifique na internet a quantidade de informações sobre latex que
+  está disponível. Neste curso, iremos cobrir alguns elementos básicos
+  de como editar um artigo, como criar seções de um artigo, fazer
+  listas, tabelas, incluir figuras, escrever equações e
+  principalmente, como incluir referências bibliográficas. 
+  
+  O roteiro para este curso será o seguinte:
+  \begin{enumerate}
+    \item Entender o funcionamento do latex examinando o presente
+      documento. Salvem este documento com um outro nome e acrescentem
+      seus próprios comentários para lembrar mais tarde.
+    \item Transformar um documento que vocês trouxeram (pode ser .doc)
+      num documento PDF feito pelo latex.
+  \end{enumerate}
+  
+\begin{framed}
+  Para gerar um arquivo .pdf, siga o seguinte roteiro:
+  \begin{enumerate}
+    \item Edite um arquivo com extensão .tex. Por exemplo, salve este
+      documento como \linebreak{nomeartigo.tex}, sem formatação.
+      \item Para executar o latex, use: \\
+      \verb#pdflatex nomeartigo#
+  \end{enumerate}
+\end{framed}
+  
+\end{abstract}
+
+
+\clearpage
+\newpage
+%----------------------------------------------------------------------------------------
+%	Sumário, lista de figuras e tabelas
+%----------------------------------------------------------------------------------------
+
+\pagestyle{empty}
+
+\tableofcontents % O latex faz um sumário com todas as suas seções
+
+\listoffigures % lista das figuras
+
+\listoftables % lista das tabelas
+
+\clearpage
+\newpage
+%----------------------------------------------------------------------------------------
+%	O conteudo propriamente dito
+%----------------------------------------------------------------------------------------
+\section{Primeira Seção: a forma do texto}
+\label{psecao}
+
+Sed ut perspiciatis unde omnis iste natus error sit voluptatem
+accusantium {\bf negrito se faz assim} doloremque laudantium, totam
+rem aperiam, eaque ipsa quae ab illo inventore veritatis et quasi
+architecto beatae vitae dicta sunt explicabo. Nemo enim ipsam
+voluptatem quia voluptas sit aspernatur aut odit aut fugit, sed quia
+consequuntur magni dolores eos qui ratione voluptatem sequi
+nesciunt. Neque porro quisquam est, qui dolorem ipsum quia dolor sit
+amet, consectetur, {\em também dá para fazer itálico} adipisci velit,
+sed quia non numquam eius modi tempora incidunt ut labore et dolore
+magnam aliquam quaerat voluptatem. Ut enim ad minima veniam, quis
+nostrum exercitationem ullam corporis suscipit laboriosam, nisi ut
+aliquid ex ea commodi consequatur? Quis autem vel eum iure
+reprehenderit qui in ea voluptate velit esse quam nihil molestiae
+consequatur, vel illum qui dolorem eum fugiat quo voluptas nulla
+pariatur? {\sc Tudo em letra maiúscula}. At vero eos et accusamus et
+iusto odio dignissimos ducimus qui blanditiis praesentium voluptatum
+deleniti atque corrupti quos dolores et quas molestias excepturi sint
+occaecati cupiditate non provident, similique sunt in culpa qui
+officia deserunt mollitia animi, id est laborum et dolorum fuga. Et
+harum quidem rerum facilis est et expedita distinctio. Nam libero
+tempore, cum soluta nobis est eligendi optio cumque nihil impedit quo
+minus id quod maxime placeat facere
+
+\subsection{Subseção}
+
+{\Large Letra grande} Lorem ipsum dolor sit amet, consectetuer
+adipiscing elit. {\large Letra um pouco menor}. Aenean commodo ligula
+eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis
+parturient montes, nascetur ridiculus mus. {\LARGE Bem grande!} Donec
+quam felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
+consequat massa quis enim. {\small Letra pequena.} Donec pede justo,
+fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo,
+rhoncus ut, imperdiet a, venenatis vitae, justo. {\tiny Consegue ler?}
+Nullam dictum felis eu pede mollis pretium. Integer tincidunt. Cras
+dapibus.
+
+\subsection{Nova seção}
+
+Vivamus elementum semper nisi. Aenean vulputate eleifend
+tellus. {\color{blue}Dá para trocar a cor do texto.} Aenean leo
+ligula, porttitor eu, consequat vitae, eleifend ac, enim. Aliquam
+lorem ante, dapibus in, viverra quis, feugiat a, tellus. Phasellus
+viverra nulla ut metus varius laoreet. Quisque rutrum. Aenean
+imperdiet. Etiam ultricies nisi vel augue. Curabitur ullamcorper
+ultricies nisi. {\color{red} Agora em vermelho.} Nam eget dui. Etiam
+rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam
+semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc,
+blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio
+et ante tincidunt tempus. Donec vitae sapien ut libero venenatis
+faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus
+tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales
+sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit
+cursus nunc,
+
+\subsubsection{Subsubseção}
+
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus
+et magnis dis parturient montes, nascetur ridiculus mus. Donec quam
+felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
+consequat massa quis enim. Donec pede justo, fringilla vel, aliquet
+nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a,
+venenatis vitae, justo. Nullam dictum felis eu pede mollis
+pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper
+nisi.
+
+{\bf Para criar um parágrafo novo, é só deixar uma linha em branco.}
+Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor eu,
+consequat vitae, eleifend ac, enim. Aliquam lorem ante, dapibus in,
+viverra quis, feugiat a, tellus. Phasellus viverra nulla ut metus
+varius laoreet. Quisque rutrum. Aenean imperdiet. Etiam ultricies nisi
+vel augue. Curabitur ullamcorper ultricies nisi. Nam eget dui. Etiam
+rhoncus. Maecenas tempus, tellus eget condimentum rhoncus, sem quam
+semper libero, sit amet adipiscing sem neque sed ipsum. Nam quam nunc,
+blandit vel, luctus pulvinar, hendrerit id, lorem. Maecenas nec odio
+et ante tincidunt tempus. Donec vitae sapien ut libero venenatis
+faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus
+tincidunt. Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales
+sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit
+cursus nunc,
+
+
+\paragraph{Parágrafo}
+
+Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean
+commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus
+et magnis dis parturient montes, nascetur ridiculus mus. Donec quam
+felis, ultricies nec, pellentesque eu, pretium quis, sem. Nulla
+consequat massa quis enim. Donec pede justo, fringilla vel, aliquet
+nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a,
+venenatis vitae, justo. Nullam dictum felis eu pede mollis
+pretium. Integer tincidunt. Cras dapibus. Vivamus elementum semper
+nisi. Aenean vulputate eleifend tellus. Aenean leo ligula, porttitor
+eu, consequat vitae, eleifend ac, enim.
+
+{\bf Esse parágrafo é um elemento dentro da divisão do
+  artigo. Utilize--o quando quiser criar uma subdivisão abaixo da
+  subsubseção.}
+
+\section{Segunda seção: Um controle maior do texto}
+
+Veja como se faz para colocar uma referência a alguma seção, figura,
+tabela, etc. que está definida no texto. Fazendo assim, você pode
+direcionar o leitor para alguma informação em específico, por exemplo,
+como mudar o tamanho da fonte, {\bf conforme visto na
+  seção~\ref{psecao}}.
+
+\subsection{Fazendo listas}
+
+Você vai precisar enumerar, listar e descrever itens ao longo do
+texto. Veja como se faz.
+
+Fazer lista como itens sem numeração:
+\begin{itemize}
+  \item Vivamus elementum semper nisi. Aenean vulputate eleifend
+tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac,
+enim.
+\item Aliquam lorem ante, dapibus in, viverra quis, feugiat a,
+tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque
+rutrum.
+\item Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur
+ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas
+tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit
+amet adipiscing sem neque sed ipsum.
+\end{itemize}
+
+A mesma lista, só que você escreve algo no lugar da bolinha:
+\begin{itemize}
+  \item[\bf Centauri:] Vivamus elementum semper nisi. Aenean vulputate eleifend
+tellus. Aenean leo ligula, porttitor eu, consequat vitae, eleifend ac,
+enim.
+\item[\bf Minbari:] Aliquam lorem ante, dapibus in, viverra quis, feugiat a,
+tellus. Phasellus viverra nulla ut metus varius laoreet. Quisque
+rutrum.
+\item[\bf Vorlon:] Aenean imperdiet. Etiam ultricies nisi vel augue. Curabitur
+ullamcorper ultricies nisi. Nam eget dui. Etiam rhoncus. Maecenas
+tempus, tellus eget condimentum rhoncus, sem quam semper libero, sit
+amet adipiscing sem neque sed ipsum.
+\end{itemize}
+Fazer lista numerada: 
+\begin{enumerate}
+ \item Nam quam nunc, blandit vel,
+luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante
+tincidunt tempus.
+\item Donec vitae sapien ut libero venenatis
+faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus
+tincidunt.
+\item Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales
+sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit
+cursus nunc,
+\end{enumerate}
+
+Só descrevendo...
+\begin{description}
+   \item Nam quam nunc, blandit vel,
+luctus pulvinar, hendrerit id, lorem. Maecenas nec odio et ante
+tincidunt tempus.
+\item Donec vitae sapien ut libero venenatis
+faucibus. Nullam quis ante. Etiam sit amet orci eget eros faucibus
+tincidunt.
+\item Duis leo. Sed fringilla mauris sit amet nibh. Donec sodales
+sagittis magna. Sed consequat, leo eget bibendum sodales, augue velit
+cursus nunc,
+\end{description}
+
+
+%----------------------------------------------------------------------------------------
+\subsection{Hora de aprender a escrever equações}
+
+Vamos começar com algo simples. Vamos escrever a segunda lei de Newton:
+\begin{equation}
+  F = ma
+  \label{newton1}
+\end{equation}
+só que tinha que escrever com vetor:
+\begin{equation}
+  \vec{F} = m \vec{a} 
+  \label{newton2}
+\end{equation}
+
+Agora tentem escrever a equação da figura abaixo:
+
+\centerline{\hbox{\includegraphics[width=.4\textwidth]{ep.jpg}}}
+
+Para ajudar, já comecei a escrever a equação. Agora é só completar.
+\begin{equation}
+  E_p=
+\label{ep}
+\end{equation}
+onde $\rho$ é a densidade da fluido, $g$ é a aceleração da gravidade,
+$a$ é a amplitude, $k$ o número de onda, $\omega$ é a frequência.
+
+{\bf Nota: Uma equação é como se fosse uma frase. Então, ela tem que
+  ter pontuação.}
+
+Quando quiser escrever equações que precisam ser alinhadas de alguma
+forma, utilize o \verb#eqnarray#:
+\begin{eqnarray}
+\frac{\partial \eta}{\partial t} + H \frac{\partial u}{\partial x}
+& = & 0 \nonumber \\ 
+\frac{\partial u}{\partial t} & = & -g \frac{\partial
+  \eta}{\partial x},   
+\label{swater_kelvin} \\
+fu & = & -g \frac{\partial \eta}{\partial y}  \nonumber 
+\end{eqnarray}
+
+\subsection{Incluindo tabelas}
+
+
+A Tabela~\ref{crono} mostra um exemplo de execução do projeto que
+deverá ter a duração de 24 meses discriminado por trimestre:
+\begin{table}[ht]
+  \begin{center}
+\caption{Cronograma de execução por trimestre.}
+\begin{tabular}{ccccccc} \hline \hline
+ Abr & Mai & III & IV & V & VI & VII \\ \hline
+ 1  & 2, 3 &  3, 4,  &   4     &   5 &  5, 6 & 7 \\ \hline
+\end{tabular}
+\label{crono}
+  \end{center}
+\end{table}
+
+Algumas coisas importantes a se notar na hora de fazer tabela:
+\begin{itemize}
+\item Normalmente, a legenda da tabela vem em cima; a de uma figura vem abaixo.
+  \item Observe como é colocada uma identificação na tabela usando--se
+    o \verb#\label#. E note que no texto, quando a tabela é chamada por esse
+    nome, aparece um número.
+\item Você não precisa se preocupar em colocar a tabela no lugar
+  certo. O latex processa o texto e coloca onde julgar ser o melhor
+  lugar.
+\item Caso você queira ter um melhor controle, ao invés de table, use
+  o tablehere.
+\begin{tablehere}
+\begin{center}
+\caption{Wind data period range.}
+\begin{tabular}{|l|c|} \hline \hline
+ Source &  Period \\ \hline
+ERS & 01/1992 -- 01/2001 \\
+SSM/I & 01/1988 -- 12/2001 \\
+NCEP & 01/1988 -- 09/2003 \\
+Quikscat & 09/1999 -- 08/2003 \\ \hline \hline
+\end{tabular}
+\end{center}
+\label{period_range}
+\end{tablehere}
+\end{itemize}
+
+\subsection{Incluindo figuras}
+
+\begin{figure}
+\vspace{.5cm}
+\centerline{\hbox{\includegraphics[width=.6\textwidth]{perigaud_nino3.jpg}}}
+\vspace{-.5cm}
+\caption{\small Índice Niño 3.}
+\label{elnino}
+\end{figure}
+
+Algumas observações importantes sobre figuras:
+\begin{itemize}
+\item Legenda vem depois da figura.
+  \item Você pode controlar o tamanho da figura no próprio
+    latex. Observe que você pode mudar o tamanho da figura usando o
+    \verb#[width=\textwidth]# ou \verb#[length=\textlength]#. Não é
+    bom usar os dois ao mesmo tempo pois senão mudará a razão de
+    aspecto da figura. Nesse argumento, coloque o tamanho desejável,
+    em centímetros, polegadas, pontos, ou usar textwidth or textheight
+    (pode colocar um valor entre 0 e 1 para escalar a figura).
+  \item Os espaços acima e abaixo da figura podem ser mudados com o
+  comando \verb#\vspace#. Use esse recurso somente quando realmente
+  necessário. É desejável que as figuras já tenham uma margem pequena
+  assim você não precisa ficar ajustando uma a uma.
+\item Note que o número da figura é colocada automaticamente. Podemos
+  nos referir a essa figura com Figura~\ref{elnino}.
+\end{itemize}
+
+Podemos colocar duas figuras juntas com uma legenda somente:
+\begin{figure}[ht]
+\vspace{.5cm}
+\centerline{\hbox{\includegraphics[width=.5\textwidth]{perigaud_nino3.jpg}}
+{\includegraphics[width=.5\textwidth]{perigaud_nino3.jpg}}}
+\centerline{\hbox{\includegraphics[width=.5\textwidth]{perigaud_nino3.jpg}}
+{\includegraphics[width=.5\textwidth]{perigaud_nino3.jpg}}}
+\vspace{-.5cm}
+\caption{\small Índice Niño 3 duas vezes.}
+\label{elnino2}
+\end{figure}
+
+\section{Como incluir referências bibliográficas}
+
+O latex possui um recurso incrível para se incluir referências
+bibliográficas. Ele se baseia num sistema de ``fichas'' como se tinha
+em bibliotecas antigamente.  Em cada ``ficha'' são colocados os
+detalhes de um artigo. Vejam o exemplo do reference.bib que estou
+compartilhando com vocês. Você pode ter um arquivo reference.bib que
+poderá ser usado para sempre. Adicione quantas ``fichas''
+quiser. Junte com a de seus amigos.
+
+Uma vez que a ``ficha'' do artigo estiver inclusa no reference.bib,
+essa ficha pode ser citada no artigo. O latex criará um arquivo
+especial com todos as referências, colocando a chamada no texto e no
+final do artigo, na lista de referências.
+
+Para exemplificar, vamos nos referir ao artigo de \shortciteN{Sato00}
+que trata sobre fluxo meridional de calor no Atlântico Norte. O
+formato da citação pode mudar para cada caso específico:
+\begin{itemize}
+  \item \shortcite{Sato00}
+  \item \shortciteN{Sato00}
+  \item \shortciteNP{Sato00}
+\end{itemize}
+
+\begin{framed}
+Receita para incluir as referências no artigo:
+\begin{enumerate}
+\item Tenha o reference.bib pronto com cada uma das citações que vai utilizar;
+  \item Escolha o estilo de referência que usará. No começo do seu
+    arquivo .tex, inclua o pacote com: \verb#\usepackage{achicago}#;
+  \item Antes do final do documento .tex, chame o arquivo das
+    referências e o estilo:\\
+    \verb#\bibliography{references}#\\
+    \verb#\bibliographystyle{achicago}#
+\item Inclua no seu artigo todas as citações desejadas. 
+\item Execute o latex: \verb#pdflatex nomeartigo#.\label{latexe}
+  \item Execute o bibtex: \verb#bibtex nomeartigo#. Cada vez que
+    fizer inclusões de referências, você deve executar o bibtex para
+    atualizar um arquivo que será criado no mesmo diretório com a
+    extensão .bbl. Por curiosidade, verifique esse arquivo.
+\item Execute o item~\ref{latexe} desta lista umas duas vezes para que
+  latex consiga atualizar as suas referências internas.
+\end{enumerate}
+\end{framed}
+
+%----------------------------------------------------------------------------------------
+%	BIBLIOGRAFIA
+%----------------------------------------------------------------------------------------
+
+\bibliography{references}
+\bibliographystyle{achicago}
+
+\end{document}
