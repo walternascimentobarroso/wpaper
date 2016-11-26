@@ -1,0 +1,42 @@
+\section{Implementando UUID no PostgreSQL}
+O PostgreSQL já possui um tipo de dado para UUID, então para usar como identificador basta seguir a SQL abaixo:
+
+\begin{table}[h]
+\centering
+\caption{Usuario}
+\vspace{0.5cm}
+\begin{tabular}{r|lr}
+ 
+Linha & Script \\ % Note a separação de col. e a quebra de linhas
+\hline                               % para uma linha horizontal
+1 & CREATE TABLE usuario (\\
+2 & \hspace{1cm} id uuid primary key,\\
+3 & \hspace{1cm} nome varchar(50), \\
+4 & \hspace{1cm} idade int \\
+5 & );           % não é preciso quebrar a última linha
+ 
+\end{tabular}
+\end{table}
+
+Com este script a tabela é criada usando o UUID como chave primaria,
+o PostgreSQL por padrão já tem o tipo UUID como tipo de dado, mas 
+para gerar UUID por ser uma sequencia aleatoria, é necessario habilitar uma extenção,
+segue abaixo o script:
+
+\begin{table}[h]
+\centering
+\caption{Habilitando UUID}
+\vspace{0.5cm}
+\begin{tabular}{r|lr}
+ 
+Linha & Script \\ % Note a separação de col. e a quebra de linhas
+\hline                               % para uma linha horizontal
+1 & CREATE EXTENSION IF NOT EXISTS "uuid-ossp";\\
+2 & SELECT uuid\_generate\_v4();
+ 
+\end{tabular}
+\end{table}
+
+
+ 
+ 
