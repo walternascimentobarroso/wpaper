@@ -1,26 +1,32 @@
-\documentclass[11pt]{article} %  Fora, ou seja, após o símbolo não aparece
-\usepackage[latin1]{inputenc}
+\documentclass[a4paper]{article}
+\usepackage[utf8]{inputenc} % no Windows pode usar [latin1], mas o TeXWorks aceita utf8.
+\usepackage[T1]{fontenc}
 \usepackage[brazil]{babel}
+\usepackage{hyperref}
+\usepackage{cite}
+% \usepackage{natbib}
 
-\title{ Recomendação de ação pedagógica para pessoas com necessidades especiais por meio de Raciocínio Baseado em Casos na Plataforma Moodle}
+% Define comando BibTeX
+\def\BibTeX{{\rm B\kern-.05em{\sc i\kern-.025em b}\kern-.08em
+    T\kern-.1667em\lower.7ex\hbox{E}\kern-.125emX}}
+
+\title{Tutor Inteligente com RaciocÃ­nio Baseado em Casos para Deficientes Visuais usando o Moodle}
 \author{Walter Nascimento Barroso}
+\date{}
 
 \begin{document}
 \maketitle
+\clearpage
+\tableofcontents
+\clearpage
 
-Sumario
+\input{Introduction}
+\input{Tema}
+\input{Problema}
+\input{Objetivo}
 
-\section{Introdução}
-Conteudo introduzido
+\include{Bibliografia}
 
-\section{Tema}
-Tema 
 
-\section{Problema}
-Problema
 
-\section{Objetivo}
-Objetivo
-
-Referencia
 \end{document}
