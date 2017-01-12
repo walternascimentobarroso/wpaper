@@ -1,0 +1,65 @@
+\chapter{Conclusões} \label{chap-Concl}
+
+Neste trabalho foram considerados problemas de escalonamento com penalidades de antecipação e atraso em ambiente monoprocessado e ambiente de máquinas paralelas idênticas, com tarefas independentes, de tempos de processamento arbitrários e pesos distintos ($P$ $||$ $\sum{\alpha_{j}E_{j}}$ $+ \sum{\beta_{j}T_{j}}$ na notação de $3$ campos). A fundamentação teórica envolvendo Otimização Combinatória, com ênfase em teoria de escalonamento, programação inteira e métodos heurísticos, juntamente com um detalhamento aprofundado do problema de escalonamento em enfoque no trabalho, envolvendo definições, notação clássica, discussão sobre estrutura de solução com empates e simetria, formulações matemáticas existentes e trabalhos relacionados. Foram apresentadas quatro abordagens algorítmicas aproximadas e uma exata para resolução do problema.
+
+Dentre as estratégias aproximadas, foram considerados os métodos de \textbf{busca local iterada}, algoritmo inicialmente proposto por Rodrigues et al. \cite{RosianeArthurEduardoMarcus:2008} e que foi adaptado para o problema considerado neste trabalho, o método de \textbf{reconexão de caminhos com busca local iterada}, cujo objetivo é encontrar melhores soluções no espaço de busca formado entre dois ótimos locais e, o terceiro método trata-se de um método de otimização global com busca múltipla baseada em população que foi desenvolvido através do \textbf{algoritmo genético com reconexão de caminhos} onde, a cada iteração, é gerada uma nova população com soluções cada vez melhores e diversificadas.
+
+No quarto método proposto também foi utilizada a ideia de busca múltipla baseada em população, que foi proposto através do \textbf{algoritmo genético} utilizando \textbf{busca local} com \textbf{reconexão de caminhos}, cujo objetivo foi de explorar cada vez mais o espaço de busca entre duas soluções ótimas locais afim de convergir rapidamente para melhores soluções. A quinta e última estratégia algorítmica apesentada envolveu o ILS com busca múltipla baseada em um conjunto de soluções, onde o objetivo desta estratégia foi de verificar se o algoritmo ILS consegue atingir melhores soluções para instâncias de tamanho maior, considerando um conjunto de soluções diversificadas a cada iteração.
+
+O método exato considerado neste trabalho foi algoritmo \textit{branch-and-cut} do CPLEX, onde foram consideradas duas formulações matemáticas, uma formulação para o ambiente monoprocessado, sem tempo ocioso entre as tarefas, proposta por Tanaka et al.~\cite{Tanaka:2009:EAS:1644424.1644462}, e a outra formulação para o ambiente de máquinas paralelas, formulação clássica de escalonamento que, através dos experimentos computacionais apresentados, essa formulação não trata o tempo ocioso em algumas instâncias. A implementação contou com a utilização da biblioteca UFFLP para C++ onde, a partir de uma instância de teste, foi possível gerar o modelo matemático a ser executado pelo CPLEX.
+
+Uma análise comparativa empírica mostrou que a estratégia baseada em população do algoritmo genético com busca local e reconexão de caminhos entre dois ótimos locais foi o melhor e mais promissor método proposto, atingindo todos os ótimos da literatura para o ambiente de monoprocessado. Os métodos apresentados também são adaptáveis ao ambiente de máquinas paralelas, onde é possível atingir boas soluções em um tempo razoável. Infelizmente ainda não existem \textit{benchmarks} na literatura para máquinas paralelas para comparação com os nossos resultados, mais este trabalho apresentou uma comparação dos resultados dos métodos aproximados e exatos a fim de se tenha uma \textbf{referência de qual seria a melhor solução} ou \textbf{solução ótima} para o problema envolvendo \textbf{ambiente multiprocessado}, espera-se também que estes resultados possam ser utilizados como \textbf{referência em outras pesquisas} para fins de comparação com outros métodos.
+
+Os resultados obtidos a partir da execução do método exato mostraram que, quando o mesmo consegue terminar, ou seja, encontrar a melhor solução, a execução do \textit{branch-and-cut} do CPLEX é mais rápida para máquinas paralelas, ao contrário dos métodos aproximados propostos. Isso se deve ao fato de que o tempo total de processamento tende a diminuir a medida que o número de máquinas disponíveis aumenta, pois, para os métodos aproximados, considera-se o custo de distribuir as tarefas nas máquinas utilizando regras de despacho toda vez que uma solução tiver que ser avaliada. Mas, apesar disso, os métodos aproximados são extremamente promissores para o problema, apresentando bons resultados em um razoável espaço de tempo, além do mais, o tempo de processamento dos métodos aproximados apresentados podem ser minimizados através da combinação de novas estratégias de solução.
+
+\section{Conferências e publicações}
+
+Os trabalhos apresentados/publicados estão listados abaixo em ordem cronológica do mais recente ao mais antigo:
+
+ 	\begin{itemize}
+ 	 \item  \textbf{Em processo de publicação para a revista \textit{Expert Systems with Applications}}.
+ 	 \vspace{-0.3cm}
+                \begin{itemize}
+                   \item \textit{Single and multi-start methods based on local search and path-relinking technique for earliness-tardiness parallel machine scheduling problems}.
+                \end{itemize}
+     \item  \textbf{Trabalho no GECCO 2013 - Genetic and Evolutionary Computation Conference}.
+     \vspace{-0.3cm}
+                \begin{itemize}
+                   \item \textit{A hybrid genetic algorithm with local search approach for E/T scheduling problems on identical parallel machines}~\cite{amorim-dias-rodrigues-uchoa:2013}.
+                \end{itemize}
+     \item  \textbf{Trabalho no WoPI 2012 - II Workshop de Pesquisa em Informática}.
+     \vspace{-0.3cm}
+                \begin{itemize}
+                   \item \textit{Minimização da Antecipação e Atraso em Escalonamento de Processos Produtivos Usando Máquinas Paralelas}~\cite{amorim-rodrigues3:2012}.
+                \end{itemize}
+     \item  \textbf{Trabalho no EURO-INFORMS MMXIII - 26th European Conference on Operational Research}.
+     \vspace{-0.3cm}
+                \begin{itemize}
+                   \item \textit{Algorithmic strategies to single and parallel machine scheduling problems with earliness-tardiness penalties}~\cite{amorim-rodrigues2:2013}.
+                \end{itemize}
+     \item  \textbf{Trabalho no EURO 2012 - $25^{th}$ European Conference on Operation Research}.
+     \vspace{-0.3cm}
+                \begin{itemize}
+                   \item \textit{MIP models and algorithms for earliness/tardiness scheduling problems on parallel machines}~\cite{amorim-dias-rodrigues2:2012}.
+                \end{itemize}
+     \item  \textbf{Trabalho no CLAIO/SBPO 2012 - Congreso Latino-iberoamericano de Investigación Operativa / Simpósio Brasileiro de Pesquisa Operacional}.
+     \vspace{-0.3cm}
+                \begin{itemize}
+                   \item \textit{ILS com reconexão de caminhos entre ótimos locais para um problema clássico de escalonamento com antecipação e atraso}~\cite{amorim-dias-rodrigues:2012}.
+                \end{itemize}
+ 	 \item  \textbf{Participação na ELAVIO 2012 - XVI Escuela Latinoamericana de Verano en Investigación Operativa}.
+ 	 \vspace{-0.3cm}
+                \begin{itemize}
+                   \item \textit{Problemas clássicos de escalonamento sob restrições de antecipação e atraso}~\cite{amorim-rodrigues:2012}.
+                   \item Participação na dinâmica de grupo.
+                \end{itemize}
+    \end{itemize}
+
+Além dos eventos e publicações supracitadas, foram realizadas visitas técnicas em instituições parceiras do Rio de Janeiro, incluindo o Departamento de Engenharia de Produção da Universidade Federal Fluminense, o Programa de Engenharia de Sistemas e Computação da COPPE/Universidade Federal do Rio de Janeiro e a sede do Instituto Nacional de Metrologia, Qualidade e Tecnologia (Inmetro), onde houve um encontro técnico com exposições tanto de pesquisas realizadas neste trabalho quanto de membros da instituição.
+
+
+\section{Trabalhos futuros}
+
+Para trabalhos futuros envolvendo problemas de escalonamento com penalidades de antecipação e atraso, considera-se importante serem  propostas formulações matemáticas em programação inteira mais robustas para tais problemas, de tal forma a serem desenvolvidos métodos exatos mais eficientes. Métodos híbridos, envolvendo a resolução de formulações relaxadas para o problema em conjunto com métodos heurísticos, é um caminho interessante a seguir, no intuito de se obter soluções ótimas com tempos de execução mais eficientes. 
+
+Um aprofundamento no estudo e tratamento de soluções com empate e simétricas também faz-se necessário, de modo que procedimentos algorítmicos que sejam capazes de detectar tais soluções equivalentes sejam elaborados. Assim, tais soluções equivalentes não precisam ser consideradas durante o processo de busca por melhores soluções, permitindo uma redução significativa do tempo de processamento do algoritmo. Por outro lado, é interessante também investigar novos ambientes de processamento como máquinas de propósito geral (\textit{mpm}) e diferentes tipos de restrições, tais como: tempos de preparação (\textit{setups}), datas de término iguais (\textit{common due dates}) e preempção (\textit{pmtn}).

@@ -1,0 +1,712 @@
+\chapter{Análise empírica dos resultados computacionais} \label{chap-ResComp}
+
+Neste capítulo são apresentados os resultados dos experimentos computacionais realizados com os métodos propostos no Capítulo~\ref{chap-MetProp}, onde foram considerados os ambientes mono e multi-processado e as instâncias propostas por Tanaka~\cite{Tanaka:2012}, que são baseadas nas instâncias da \textit{OR-Library} para ambiente monoprocessado, sendo aqui adaptadas para ambiente multiprocessados também. As estratégias propostas apresentam soluções ótimas, dentre eles, destacam-se que os ótimos da literatura foram todos obtidos, com tempos razoáveis de processamento. Os métodos propostos nesta dissertação são adequados tanto para mono quanto para ambientes multiprocessados, atingindo boas soluções em um tempo de execução razoável. Infelizmente, não existem \textit{benchmarks} disponíveis na literatura para o problema de escalonamento com antecipação e atraso em máquinas paralelas, mas, espera-se que as instâncias adaptadas (para máquinas paralelas) e os resultados computacionais apresentados possam servir de parâmetro para outros trabalhos de pesquisa.
+
+
+\section{Ambiente computacional}
+
+Os experimentos computacionais dos métodos propostos neste trabalho foram realizados em um servidor Intel(R) Core(TM) i7-3770 CPU @ 3.40GHz, 12GB, Sistema Operacional Linux, utilizando-se linguagem de programação C/C++, ferramenta CPLEX e biblioteca UFFLP, para a resolução de problemas de programação inteira.
+
+
+\section{Instâncias de teste}
+
+As instâncias utilizadas para teste são as instâncias geradas por Tanaka~\cite{Tanaka-instances:2012} para o problema de escalonamento com antecipação e atraso ponderados em ambiente monoprocessado sem tempo ocioso, onde, as instâncias de $40$, $50$ e $100$ tarefas foram geradas a partir das instâncias da \textit{OR-Library}~\cite{OR-Library:2012} que contou apenas com a adição das penalidades de antecipação. As instâncias de $150$, $200$, $250$ e $300$ tarefas foram geradas de um modo similar a geração das instâncias da \textit{OR-Library}. Para os experimentos em ambiente de máquinas paralelas, as instâncias do Tanaka~\cite{Tanaka-instances:2012} receberam uma modificação em suas datas de término sugeridas, ou seja, as datas de término das instâncias foram divididas pela quantidade de máquinas, pois caso contrário, com uma data de término sugerida relativamente grande (compatível com ambiente monoprocessado) o valor de antecipação e atraso ponderados poderiam ser nulos. Os ótimos disponibilizados por Tanaka~\cite{Tanaka-instances:2012} foram obtidos através da execução de um algoritmo exato baseado em programação dinâmica.
+
+As instâncias da \textit{OR-Library}~\cite{OR-Library:2012} foram geradas randomicamente de acordo com a configuração a seguir: para cada tarefa $j(j=1,...,n)$, foi gerado um tempo de processamento $p_{j}$ a partir de uma distribuição uniforme no intervalo $[1, 100]$ e um valor inteiro associado ao peso ou penalidade $w_{j}$ foi gerado a partir e uma distribuição uniforme no intervalo $[1, 10]$. Para se ter instâncias com complexidades distintas, as datas de término sugeridas $d_{j}$ foram geradas através de diferentes distribuições uniformes. Desta forma, para um determinado intervalo de datas de término sugeridas $RDD(RDD = 0.2, 0.4, 0.6, 0.8, 1.0)$ e para uma determinada média correspondente ao fator de atraso $TF(TF=0.2, 0.4, 0.6, 0.8, 1.0)$, uma data de término sugerida $d_{j}$ para cada tarefa $j$ é randomicamente gerada através da distribuição uniforme no intervalo $[P(1-TF-RDD/2), P(1-TF+RDD/2)]$, onde $P = \sum_{i=1}^{n} p_{j}$. Cinco instâncias foram geradas para cada 25 pares de valores de $RDD$ e $TF$, obtendo assim $125$ instâncias no total para cada valor de $n$~\cite{Crauwels:1998}. Um exemplo de instância é apresentado na Tabela~\ref{tab:inst-example}.
+
+
+% Exemplo de instância utilizada
+\begin{table}[htbp]
+  \centering
+  \footnotesize
+  \caption{Exemplo de instância utilizada.}
+    \begin{tabular}{c|p{2.4cm}|p{2.4cm}|p{2.4cm}|p{2.4cm}}
+    \hline
+    \multirow{3}[4]{*}{1$^a$ linha} & \centering 1$^a$ coluna & \centering 2$^a$ coluna & \centering 3$^a$ coluna & \multicolumn{1}{c}{4$^a$ coluna} \\
+    \cline{2-5}
+          & \centering 8 (número de tarefas) &       &       &  \\
+    \hline
+    \multirow{6}[18]{*}{2$^a$ linha em diante} & \centering tempo de \linebreak processamento & \centering datas de término \linebreak sugeridas & \centering penalidades de antecipação & \multicolumn{1}{c}{penalidade de \linebreak atraso} \\
+    \cline{2-5}
+          & \centering 3     & \centering 3     & \centering 3     & \multicolumn{1}{c}{5} \\
+          & \centering 2     & \centering 6     & \centering 4     & \multicolumn{1}{c}{5} \\
+          & \centering 3     & \centering 6     & \centering 8     & \multicolumn{1}{c}{8} \\
+          & \centering 4     & \centering 4     & \centering 8     & \multicolumn{1}{c}{10} \\
+          & \centering 6     & \centering 6     & \centering 6     & \multicolumn{1}{c}{4} \\
+          & \centering 7     & \centering 10    & \centering 7     & \multicolumn{1}{c}{3} \\
+          & \centering 3     & \centering 11    & \centering 4     & \multicolumn{1}{c}{2} \\
+          & \centering 3     & \centering 8     & \centering 5     & \multicolumn{1}{c}{8} \\
+    \hline
+    \end{tabular}%
+  \label{tab:inst-example}%
+\end{table}%
+
+
+\section{Resultados - métodos aproximados}
+
+Os experimentos com o algoritmo ILS contou com $30nm$ iterações (sendo $n$ o número de tarefas e $m$ o número de máquinas), onde a cada $5$ iterações uma nova solução é gerada e a cada $3$ iterações a solução corrente é perturbada com o objetivo de se explorar outras regiões do espaço de busca de soluções, evitando assim ótimos locais. O algoritmo ILS+PR contou com duas buscas locais a fim de que se tenham dois ótimos locais como solução inicial para o algoritmo de reconexão de caminhos. O algoritmo também foi executado com $25nm$ iterações, onde a cada iteração são geradas duas soluções, e é realizada uma busca local em cada solução gerada para que se tenham dois ótimos locais. A cada $5$ iterações, estas duas soluções geradas recebem uma perturbação, para que, posteriormente, seja aplicada uma busca local em cada solução perturbada. Assim, juntamente com a exploração do espaço de soluções formado por dois ótimos locais, espera-se explorar a maior parte possível do espaço de busca de soluções.
+
+Os métodos baseados em população foram desenvolvidos através do algoritmo genético com busca local e reconexão de caminhos (GA+LS+PR) e (GA+PR), que contou com a geração de uma nova população a cada iteração e testado com a seguinte configuração:
+
+\begin{itemize}
+    \item \textbf{primeira parte ($1/3$ das iterações):} a nova população gerada, a cada iteração, é baseada em $5\%$ de elitismo, $50\%$ de mutação, $30\%$ de cruzamento e $15\%$ de cruzamento com busca local. O objetivo das primeiras $1/3$ iterações é aumentar a diversidade de indivíduos e assim obter a maior amostra possível do espaço de soluções;
+    \item \textbf{para a se segunda parte ($2/3$ das iterações):} a nova população gerada, a cada iteração, é baseada em $10\%$ de elitismo, $30\%$ de mutação, $10\%$ de cruzamento, $20\%$ de cruzamento com busca local e $30\%$ de cruzamento usando busca local e reconexão de caminhos. Esta segunda configuração permite achar soluções ótimas ou próximas do ótimo na população diversificada obtida nas primeiras iterações ($1/3$), as próximas $2/3$ iterações do algoritmo são dedicadas em achar as melhores soluções possíveis, através da geração de uma nova população, a cada iteração, com soluções cada vez melhores, mas nada impede que soluções ótimas podem ser encontradas nas primeiras iterações ($1/3$).
+\end{itemize}
+
+O algoritmo ILS-M, método de otimização global com busca múltipla (\textit{multi-start}), foi testado com um conjunto de $12n$ soluções a cada iteração e $60$ iterações, onde $n$ é o número de tarefas e $m$ é o número de máquinas.
+
+
+\subsection{Resultados ambiente monoprocessado}
+
+Os resultados obtidos para o ambiente monoprocessado foram reportados nas Tabelas~\ref{tab:Res-1m-40-50-100-150-200-300jobs} e \ref{tab:Res-1m-40-50-100-150-200-300jobs-GA+PR_GA+LS+PR}, que apresentam os resultados para $40$, $50$, $100$, $150$, $200$ e $300$ tarefas, onde os resultados são comparados com o \textit{benchmark} da literatura, Tanaka~\cite{Tanaka:2012}, atingindo a maioria de seus valores ótimos.
+
+No ambiente monoprocessado é possível perceber que a maioria das soluções ótimas ou próximo do ótimo obtidas, foram alcançadas na primeira geração dos algoritmos GA+LS+PR e ILS-M para $40$, $50$ e $100$ tarefas. Isto se deve a quantidade de buscas locais realizadas a cada geração o algoritmo, ou seja, $15\%$ da população total no primeiro $1/3$ de geração, e por este motivo o tempo de execução do algoritmo tende a ser maior, é a partir de $100$ tarefas que o número de gerações necessárias para atingir a melhor solução começa a crescer. Por outro lado, os algoritmos ILS e ILS+PR levam um número maior de iterações para chegar na melhor solução, pois o algoritmo ILS realiza uma busca local a cada iteração e o ILS+PR realiza duas buscas locais por iteração.
+
+A primeira coluna das tabelas apresenta a quantidade de tarefas utilizadas, a segunda coluna apresenta o número referente a instância de \textit{benchmark} da literatura cuja solução ótima é apresentada na terceira coluna, Tanaka~\cite{Tanaka:2012}. As outras colunas das tabelas apresentam a melhor solução obtida pelos algoritmos ILS, ILS+PR, GA+PR, GA+LS+PR e ILS-M, a média de soluções obtidas a partir de três execuções de cada algoritmo para uma determinada instância, quantidade de iterações dos algoritmos para chegar na melhor solução, tempo gasto que os algoritmos levaram para chegar na melhor solução e o tempo total de execução do algoritmos.
+
+
+% Algorithm Results for 40¨, 50, 100, 150, 200 and 300 jobs on single machine.
+\begin{landscape}
+\begin{table}[h]
+  \centering
+  \vspace{-0.5cm}
+  \caption{Resultados para $40$, $50$, $100$, $150$, $200$ e $300$ tarefas em ambiente monoprocessado ($ 1 | | \sum{\alpha_{j}E_{j}} + \sum{\beta_{j}T_{j}}$).}
+  \scalebox{0.5}{
+    \begin{tabular}{c|c|c|cccc|cccc|cccc|cccc|cccc}
+    \hline
+    \multirow{2}[2]{*}{\textbf{$J_{i}$}} & \multirow{2}[2]{*}{\textbf{Inst.}} & \multirow{2}[2]{*}{\textbf{Tanaka}} & \multicolumn{4}{c|}{\textbf{Melhor Solução}} & \multicolumn{4}{c|}{\textbf{Média das soluções}} & \multicolumn{4}{c|}{\textbf{Iterações/Gerações}} & \multicolumn{4}{c|}{\textbf{Melhor Tempo}} & \multicolumn{4}{c}{\textbf{Tempo Total}} \\
+    \cline{4-23}
+          &       &       & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} \\
+    \hline
+    \multirow{13}[0]{*}{40} & 1     & 54640 & 54640 & 54640 & 54640 & 54640 & 54640.0  & 54640.0 &  54640.0 & 54640.0 & 7     & 1     & 1     & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 3.0   & 5.7 & 18.3 & 10.8 \\
+              & 11    & 29924 & 29924 & 29924 & 29924 & 29924 & 29924.0  & 29924.0 &  29924.0 & 29924.0 & 1     & 3     & 1   & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 2.7   & 5.4 & 7.9 & 12.4 \\
+              & 21    & 77819 & 77819 & 77819 & 77819 & 77819 & 77819.0  & 77819.0 &  77819.0  & 77819.0 & 3     & 1     & 1   & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 2.3   & 4.2 & 11.2 & 12.0 \\
+              & 31    & 23291 & 23291 & 23291 & 23291 & 23291 & 23291.0  & 23291.0 &  23291.0  & 23291.0 & 1     & 1     & 1   & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 3.3   & 5.9 & 12.2 & 11.2 \\
+              & 41    & 59093 & 59093 & 59093 & 59093 & 59093 & 59093.0  & 59093.0 &  59093.0 & 59093.0 & 3     & 1     & 1   & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 3.1   & 6.1 & 13.2 & 10.6 \\
+              & 51    & 47667 & 47667 & 47667 & 47667 & 47667 & 47667.0  & 47667.0 &  47667.0 & 47667.0 & 2     & 6     & 1   & 1 & 0.0   & 0.1   & 0.0  & 0.1 & 3.1   & 6.2 & 8.2 & 11.4 \\
+              & 61    & 21737 & 21737 & 21737 & 21737 & 21737 & 21737.0  & 21737.0 &  21737.0 & 21737.0 & 11    & 1     & 1   & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 3.6   & 6.9 & 14.0 & 12.3 \\
+              & 71    & 90521 & 90521 & 90521 & 90521 & 90521 & 90521.0  & 90521.0 &  90521.0 & 90521.0 & 1     & 1     & 1   & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 3.0   & 5.6 & 18.5 & 10.3 \\
+              & 81    & 12552 & 12552 & 12552 & 12552 & 12552 & 12552.0  & 12552.0 &  12575.0 & 12552.0 & 92    & 32    & 1   & 1 & 0.3   & 0.2   & 0.0  & 0.2 & 3.4   & 6.6 & 12.6 & 12.7 \\
+              & 91    & 48311 & 48311 & 48311 & 48311 & 48311 & 48311.0  & 48311.0 &  48311.0 & 48311.0 & 1     & 1     & 1   & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 3.4   & 6.6 & 6.6 & 11.5 \\
+              & 101   & 85961 & 85961 & 85961 & 85961 & 85961 & 85961.0  & 85961.0 &  85961.0 & 85961.0 & 4     & 5     & 1   & 1 & 0.1   & 0.1   & 0.0  & 0.1 & 3.8   & 7.2 & 6.6 & 11.3 \\
+              & 111   & 32374 & 32374 & 32374 & 32374 & 32374 & 32374.0  & 32374.0 &  32377.3 & 32374.0 & 5     & 2     & 1   & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 3.5   & 6.9 & 6.7 & 11.9 \\
+              & 121   & 122538 & 122538 & 122538 & 122538 & 122538 & 122538.0  & 122538.0 &  122540.3 & 122538.0 & 40    & 9     & 1   & 1 & 0.1   & 0.1   & 0.0  & 0.1 & 3.3   & 6.5 & 6.7 & 11.2 \\
+        \hline
+        \multirow{13}[0]{*}{50} & 1     & 130548 & 130548 & 130548 & 130548 & 130548 & 130548.0  & 130548.0 &  130570.3 & 130548.0 & 11    & 15    & 1    & 1 & 0.1   & 0.2   & 0.1  & 0.0 & 6.5   & 12.7 & 17.6 & 23.6 \\
+              & 11    & 54167 & 54167 & 54167 & 54167 & 54167 & 54167.0  & 54167.0 &  54167.0 & 54167.0 & 3     & 19    & 1   & 1  & 0.0   & 0.2   & 0.0  & 0.2 & 0.0   & 12.2 & 17.7 & 23.9 \\
+              & 21    & 214555 & 214555 & 214555 & 214555 & 214555 & 214555.0  & 214555.0 &  214555.0 & 214555.0 & 5     & 2     & 1    & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 5.9   & 11.2 & 16.6 & 21.4 \\
+              & 31    & 37565 & 37565 & 37565 & 37565 & 37565 & 37565.0  & 37565.0 &  37573.7 & 37565.0 & 5     & 21    & 1   &  1 & 0.0   & 0.3   & 0.1  & 0.0 & 7.5   & 14.4 & 18.7 & 25.6 \\
+              & 41    & 71949 & 71949 & 71949 & 71949 & 71949 & 71949.0  & 71949.0 &  71949.0 & 71949.0 & 4     & 1     & 1   & 1  & 0.0   & 0.0   & 0.0  & 0.0 & 6.8   & 12.9 & 18.2 & 24.1 \\
+              & 51    & 56208 & 56208 & 56208 & 56208 & 56208 & 56208.0  & 56208.0 &  56208.0 & 56208.0 & 1     & 1     & 1   & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 8.6   & 15.8 & 20.2 & 31.7 \\
+              & 61    & 34640 & 34640 & 34640 & 34660 & 34640 & 34640.0  & 34640.0 &  34676.7 & 34640.0 & 121   & 88    & 1   & 1 & 0.7   & 1.2   & 0.1  & 0.6 & 8.4   & 16.3 & 19.8 & 28.0 \\
+              & 71    & 150978 & 150978 & 150978 & 150978 & 150978 & 150978.0  & 150978.0 &  150978.0 & 150978.0 & 36    & 16    & 1   & 1 & 0.2   & 0.2   & 0.0  & 0.0 & 7.0   & 14.1 & 17.6 & 23.9 \\
+              & 81    & 17433 & 17433 & 17433 & 17433 & 17433 & 17433.0  & 17433.0 &  17433.0 & 17433.0 & 13    & 13    & 1   & 1 & 0.1   & 0.2   & 0.0   & 0.0 & 8.8  & 16.7 & 22.1 & 28.8 \\
+              & 91    & 89715 & 89715 & 89715 & 89715 & 89715 & 89715.0  & 89715.0 &  89715.0 & 89715.0 & 31    & 8     & 1   & 1 & 0.2   & 0.1   & 0.0  & 0.0 & 8.3   & 16.1 & 18.8 & 26.6 \\
+              & 101   & 90880 & 90880 & 90880 & 90880 & 90880 & 90880.0  & 90880.0 &  90883.7 & 90880.0 & 38    & 4     & 1   & 1 & 0.2   & 0.1   & 0.1  & 0.1 & 8.5   & 15.8 & 18.8 & 28.5 \\
+              & 111   & 30170 & 30170 & 30170 & 30170 & 30170 & 30170.0  & 30170.0 &  30170.0 & 30170.0 & 8     & 8     & 1   & 1 & 0.0   & 0.1   & 0.1  & 0.0 & 8.1   & 15.8 & 19.7 & 27.9 \\
+              & 121   & 79007 & 79007 & 79007 & 79007 & 79007 & 79007.0  & 79007.0 &  79007.0 & 79007.0 & 2     & 1     & 1   & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 7.1   & 13.8 & 18.1 & 25.1 \\
+    \hline
+       \multirow{13}[0]{*}{100} & 1     & 405122 & 405122 & 405122 & 405122 & 405122 & 405122.0  & 405122.0  &  405122.0 & 405122.0 & 707   & 41    & 1    & 1 & 24.7  & 3.7   & 1.7  & 11.0 &  107.6  & 201.5  &    535.1 & 372.7 \\
+              & 11    & 252623 & 252623 & 252623 & 252623 & 252623 & 252633.3 & 252623.0  &  252637.7 & 252623.0 & 1858  & 321   & 1   & 1 & 66.1  & 26.2  & 0.7  & 2.5 & 109.1  & 204.9  &    528.9 & 360.5 \\
+              & 21    & 898927 & 898927 & 898927 & 898927 & 898927 & 898927.0  & 898927.0  &  898927.0 & 898927.0 & 1     & 1     & 1   & 1 & 0.1   & 0.1   & 0.1  & 0.1 & 85.6  & 151.6  &    481.4 & 307.6 \\
+              & 31    & 193480 & 193480 & 193480 & 193480 & 193480 & 193480.0  & 193480.0  &  193525.3 & 193480.0 & 69    & 50    & 2   & 1 & 3.2   & 4.8   & 5.0  & 3.6 & 124.5  & 227.7  &    568.3 & 370.9 \\
+              & 41    & 463554 & 463554 & 463554 & 463554 & 463554 & 463554.0  & 463554.0  &  463556.3 & 463554.0 & 593   & 56    & 1   & 1 & 21.5  & 5.8   & 0.3  & 1.7 & 107.8  & 226.7  &    534.2 & 355.2 \\
+              & 51    & 444991 & 444991 & 444991 & 444991 & 444991 & 444991.0  & 444991.0  &  444991.0 & 444991.0 & 2     & 15    & 1   & 1 & 0.1   & 1.5   & 0.5  & 0.4 & 123.5  & 233.1  &    549.0 & 388.9 \\
+              & 61    & 102185 & 102185 & 102185 & 102185 & 102185 & 102185.0  & 102185.0  &  102187.0 & 102185.0 & 568   & 61    & 2    & 1 & 23.8  & 6.4   & 4.7  & 11.7 & 128.7  & 245.9  &    602.9 & 404.4 \\
+              & 71    & 640932 & 640932 & 640932 & 640932 & 640932 & 640932.0  & 640932.0  &  640932.0 & 640932.0 & 342   & 72    & 1   & 1 & 11.8  & 5.7   & 0.1  & 1.1 & 101.9  & 197.4  &    523.7 & 392.4 \\
+              & 81    & 47629 & 47629 & 47629 & 47629 & 47629 & 47629.0  & 47629.0  &  47680.0 & 47629.0 & 252   & 24    & 2   & 1 & 11.1  & 2.3   & 5.3  & 3.7 & 125.8  & 255.9  &    630.2 & 467.8 \\
+              & 91    & 249743 & 249743 & 249743 & 249743 & 249743 & 249743.0  & 249743.0 &  249743.0 & 249743.0 & 672   & 374   & 2    & 1 & 24.8  & 32.4  & 4.1  & 3.2 & 112.4  & 219.3 & 554.6 & 391.0 \\
+              & 101   & 356397 & 356397 & 356397 & 356397 & 356397 & 356397.0  & 356397.0 &  356397.0 & 356397.0 & 15    & 4     & 1   & 1 & 0.7   & 0.5   & 0.2  & 0.3 & 129.4  & 239.9 & 550.2 & 373.3 \\
+              & 111   & 161642 & 161653 & 161680 & 161691 & \textcolor{red}{\textbf{161642}} & 161669.7  & 161682.0 &  161691.0 & 161674.7 & 109   & 883   & 4   & 8 & 5.2   & 97.2  & 10.6 & 91.7 & 147.3  & 274.8 & 639.0 & 460.3 \\
+              & 121   & 471761 & 471768 & \textcolor{red}{\textbf{471761}} & \textcolor{red}{\textbf{471761}} & \textcolor{red}{\textbf{471761}} & 471768.0  & 471761.0 &  471766.0 & 471761.0 & 2863  & 825   & 3    & 1 & 151.4  & 74.9  & 8.0  & 4.6 & 158.8  & 230.4 & 528.5 & 428.8 \\
+           \hline
+          \multirow{5}[1]{*}{150} & 1     & 855097 & 855097 & 855097 & 855097 & 855097 & 855097.0  &  855097.0  &  855097.0 & 855097.0 & 56    & 27    & 2    & 1 & 12.9  &      7.8  &     31.6 & 31.5 & 822.4  &   1012.9  & 4245.7 & 2475.5 \\
+              & 31    & 378921 & 378921 & 378921 & 378921 & 378921 & 378924.3  &  378924.3  &  378921.0 & 378921.0 & 2065  & 1012  & 2   & 2 & 406.7  &    293.1  &     28.2 & 151.8 & 867.1  &   1100.6  & 4376.9 & 2684.3 \\
+              & 61    & 235255 & 235358 & 235275 & 235752 & \textcolor{red}{\textbf{235255}} & 235451.0  &  235291.7  &  235752.0 & 235255.0 & 1230  & 1397  & 4  &  6 & 273.3  &    460.9  &     60.1  & 535.1 & 997.3  &   1237.0  & 4572.4 & 3129.7 \\
+              & 91    & 416842 & 416842 & 416842 & 416842 & 416842 & 416842.0  &  416842.0  &  416842.0  & 416842.0 & 77    & 65    & 3    & 1 & 17.9  &     21.2  &     45.9 & 36.4 & 973.1  &   1224.3  & 4503.5 & 2949.6 \\
+              & 121   & 629821 & 629821 & 629821 & 629821 & 629821 & 629821.0  &  629821.0  &  629821.0 & 629821.0 & 44    & 39    & 1  &  1 & 8.9   &     10.8  &      3.8  & 12.0 & 892.7  &   1075.5  & 4448.2 & 2742.7 \\
+           \hline
+           200   & 1     & 1508466 & 1508473 & 1508473 & 1508674 & \textcolor{red}{\textbf{1508466}} & 1508473.0  & 1508475.6 &  1508674.0 & 1508479.0 & 1863  & 2959  &  4  & 3 & 1463.6  &   5184.7  &  153.5 & 646.6 & 4709.0  & 8764.2 & 17461.8 & 7468.9 \\
+           \hline
+           300   & 1     & 3184308 & 3184669 & 3184707 & 3185010 & 3184598 & 3184883.8 & 3184781.2 & 3185010.0 & 3184606.0 & 1386  & 20    & 6  & 8 & 4045  & 127.6 & 2811.9 & 10995.2 & 26655.7 & 45057.7 & 135907.7 & 43990.6 \\
+      \hline
+  \end{tabular}}%
+  \label{tab:Res-1m-40-50-100-150-200-300jobs}%
+\end{table}%
+\end{landscape}
+
+
+% Resultados para 40, 50, 100, 150, 200 e 300 tarefas em ambiente monoprocessado
+%\begin{landscape}
+\begin{table}[h]
+  \centering
+  \vspace{-0.5cm}
+  \caption{Resultados para $40$, $50$, $100$, $150$, $200$ e $300$ tarefas em ambiente monoprocessado ($ 1 | | \sum{\alpha_{j}E_{j}} + \sum{\beta_{j}T_{j}}$) - GA+PR e GA+LS+PR.}
+  \scalebox{0.55}{
+    \begin{tabular}{c|c|c|cc|cc|cc|cc|cc}
+    \hline
+    \multirow{2}[3]{*}{\textbf{$J_{i}$}} & \multirow{2}[3]{*}{\textbf{Inst.}} & \multirow{2}[3]{*}{\textbf{Tanaka}} & \multicolumn{2}{c|}{\textbf{Melhor Solução}} & \multicolumn{2}{c|}{\textbf{Média das soluções}} & \multicolumn{2}{c|}{\textbf{Iterações}} & \multicolumn{2}{c|}{\textbf{Melhor tempo}} & \multicolumn{2}{c}{\textbf{Tempo total}} \\
+    \cline{4-13}
+          &       &       & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} \\
+    \hline
+    \multirow{13}[1]{*}{40} & 1     & 54640 & 61662 & 54640 &  66490.0  &  54640.0  & 14    & 1 & 0.0 & 0.0 & 0.6 & 18.3  \\
+              & 11    & 29924 & 35028 & 29924 &  40712.7  &  29924.0  & 436   & 1 & 0.2 & 0.0 & 0.6 & 7.9 \\
+              & 21    & 77819 & 82771 & 77819 &  83325.0  &  77819.0  & 16    & 1 & 0.0 & 0.0 & 0.6 & 11.2 \\
+              & 31    & 23291 & 34155 & 23291 &  37775.0  &  23291.0  & 14    & 1 & 0.0 & 0.0 & 0.7 & 12.2 \\
+              & 41    & 59093 & 71509 & 59093 &  73803.3  &  59093.0  & 16    & 1 & 0.0 & 0.0 & 0.6 & 13.2 \\
+              & 51    & 47667 & 57644 & 47667 &  62202.7  &  47667.0  & 15    & 1 & 0.0 & 0.0 & 0.6 & 8.2 \\
+              & 61    & 21737 & 32166 & 21737 &  33611.7  &  21737.0  & 15    & 1 & 0.0 & 0.0 & 0.7 & 14.0 \\
+              & 71    & 90521 & 98639 & 90521 &  100008.3  &  90521.0  & 15    & 1 & 0.0 & 0.0 & 0.6 & 18.5 \\
+              & 81    & 12552 & 25239 & 12552 &  27550.7  &  12575.0  & 16    & 1 & 0.0 & 0.0 & 0.6 & 12.6 \\
+              & 91    & 48311 & 57762 & 48311 &  60402.0  &  48311.0  & 16    & 1 & 0.0 & 0.0 & 0.7 & 6.6 \\
+              & 101   & 85961 & 91461 & 85961 &  96966.3  &  85961.0  & 487   & 1 & 0.2 & 0.0 & 0.7 & 6.6 \\
+              & 111   & 32374 & 46167 & 32374 &  48827.3  &  32377.3  & 13    & 1 & 0.0 & 0.0 & 0.6 & 6.7 \\
+              & 121   & 122538 & 128310 & 122538 &  130731.7  &  122540.3  & 334   & 1 & 0.1 & 0.0 & 0.6 & 6.7 \\
+        \hline
+        \multirow{13}[0]{*}{50} & 1     & 130548 & 136812 & 130548 &  138395.7  &  130570.3  & 1348  & 1 & 0.8 & 0.1 &      1.2  & 17.6 \\
+              & 11    & 54167 & 67582 & 54167 &  70256.3  &  54167.0  & 19    & 1 & 0.0 & 0.0 &      1.2  & 17.7 \\
+              & 21    & 214555 & 220962 & 214555 &  227411.0  &  214555.0  & 22    & 1 & 0.0 & 0.0 &      1.1  & 16.6 \\
+              & 31    & 37565 & 53983 & 37565 &  59410.3  &  37573.7  & 16    & 1 & 0.0 & 0.1 &      1.2  & 18.7 \\
+              & 41    & 71949 & 84157 & 71949 &  86294.0  &  71949.0  & 21    & 1 & 0.0 & 0.0 &      1.1  & 18.2 \\
+              & 51    & 56208 & 75182 & 56208 &  79038.7  &  56208.0  & 17    & 1 & 0.0 & 0.0 &      1.1  & 20.2 \\
+              & 61    & 34640 & 51643 & 34660 &  52953.3  &  34676.7  & 19    & 1 & 0.0 & 0.1 &      1.2  & 19.8 \\
+              & 71    & 150978 & 160379 & 150978 &  163808.3  &  150978.0  & 21    & 1 & 0.0 & 0.0 &      1.2  & 17.6 \\
+              & 81    & 17433 & 38594 & 17433 &  41752.3  &  17433.0  & 17    & 1 & 0.0 & 0.0 &      1.1  & 22.1 \\
+              & 91    & 89715 & 99850 & 89715 &  107286.7  &  89715.0  & 18    & 1 & 0.0 & 0.0 &      1.2  & 18.8 \\
+              & 101   & 90880 & 107291 & 90880 &  115951.3  &  90883.7  & 16    & 1 & 0.0 & 0.1 &      1.2  & 18.8 \\
+              & 111   & 30170 & 56800 & 30170 &  60965.7  &  30170.0  & 18    & 1 & 0.0 & 0.1 &      1.2  & 19.7 \\
+              & 121   & 79007 & 84838 & 79007 &  95219.7  &  79007.0  & 21    & 1 & 0.0 & 0.0 &      1.2  & 18.1 \\
+        \hline
+        \multirow{13}[1]{*}{100} & 1     & 405122 & 453932 & 405122 &  458321.7  & 405122.0 & 34    & 1 &      0.1  & 1.7 & 9.4 & 535.1 \\
+              & 11    & 252623 & 273936 & 252623 &  283357.0  & 252637.7 & 37    & 1 &      0.1  & 0.7 & 9.1 & 528.9 \\
+              & 21    & 898927 & 914618 & 898927 &  927073.3  & 898927.0 & 39    & 1 &      0.1  & 0.1 & 8.8 &   481.4 \\
+              & 31    & 193480 & 247159 & 193480 &  252896.3  & 193525.3 & 38    & 2 &      0.1  & 5.0 & 9.0 &   568.3 \\
+              & 41    & 463554 & 511288 & 463554 &  519833.7  & 463556.3 & 44    & 1 &      0.1  & 0.3 & 9.3 &    534.2 \\
+              & 51    & 444991 & 490791 & 444991 &  506307.3  & 444991.0 & 37    & 1 &      0.1  & 0.5 & 11.4 &   549.0 \\
+              & 61    & 102185 & 153880 & 102185 &  171502.7  & 102187.0 & 39    & 2 &      0.1  & 4.7 & 9.2 & 602.9 \\
+              & 71    & 640932 & 669460 & 640932 &  678100.3  & 640932.0 & 40    & 1 &      0.1  & 0.1 & 9.2 & 523.7 \\
+              & 81    & 47629 & 139317 & 47629 &  146335.7  & 47680.0 & 36    & 2 &      0.1  & 5.3 & 9.2 & 630.2 \\
+              & 91    & 249743 & 289048 & 249743 &  314394.3  & 249743.0 & 41    & 2 &      0.1  & 4.1 & 11.3 & 554.6 \\
+              & 101   & 356397 & 400453 & 356397 &  437361.7  & 356397.0 & 39    & 1 &      0.1  & 0.2 & 8.9 & 550.2 \\
+              & 111   & 161642 & 212962 & 161691 &  240935.3  & 161691.0 & 39    & 4 &      0.1  & 10.6 & 9.4 & 639.0 \\
+              & 121   & 471761 & 508129 & 471761 &  525144.3  & 471766.0 & 40    & 3 &      0.1  & 8.0 & 9.3 & 528.5 \\
+         \hline
+         \multirow{5}[1]{*}{150} & 1     & 855097 & 924683 & 855097 &  924683.0  &  855097.0  & 65    & 2     & \multicolumn{1}{c}{0.4} & 31.6  & 43.4 & 4245,7 \\
+                & 31    & 378921 & 500312 & 378921 &  500312.0  &  378921.0  & 52    & 2     & 0.2 & 28.2  & 43.1 & 4376.9 \\
+                & 61    & 235255 & 349451 & 235752 &  349451.0  &  235752.0  & 52    & 4     & 0.3 & 60.1  & 48.8 & 4572.4 \\
+                & 91    & 416842 & 501233 & 416842 &  501233.0  &  416842.0  & 54    & 3     & 0.2 & 45.9  & 46.9 & 4503.5 \\
+                & 121   & 629821 & 773678 & 629821 &  773678.0  &  629821.0  & 60    & 1     & 0.3 & 3.8   & 44.2 & 4448.2 \\
+         \hline
+          200   & 1     & 1508466 & 1640019 & 1508674 & 1664243.3 & 1508674.0 & 80    & 4     & 0.7 & 153.5 & 116.5 & 17461.8 \\
+         \hline
+          300   & 1     & 3184308 & 3465295 & 3185010 & 3498471.3 & 3185010.0 & 119   & 6     & 36.6 & 2811.9 & 486.9 & 135907.7 \\
+\hline
+\end{tabular}}%
+\label{tab:Res-1m-40-50-100-150-200-300jobs-GA+PR_GA+LS+PR}%
+\end{table}%
+%\end{landscape}
+
+
+\subsection{Resultados ambiente multiprocessado}
+
+Os resultados obtidos para o ambiente multiprocessado foram reportados nas Tabelas~\ref{tab:Res-2m-40-50-100-150-200jobs} e \ref{tab:Res-2m-100-150-200jobs-GA+PR_GA+LS+PR}, que apresentam os resultados para $40$, $50$, $100$, $150$ e $200$ tarefas em $2$ máquinas. Na Tabela~\ref{tab:Res-2m-40-50-100-150-200jobs} pode-se observar que os algoritmos GA+LS+PR e ILS-M atingiram soluções ótimas ou próximas do ótimo para a maioria das instâncias testadas.
+
+O resultados do método GA+LS+PR e ILS-M também se destacam nos experimentos para $4$ e $10$ máquinas, como pode ser observado nas Tabelas~\ref{tab:Res-4m-40-50-100jobs} e \ref{tab:Res-4m-40-50-100jobs-GA+PR_GA+LS+PR}, que apresentam os resultados computacionais das instâncias adaptadas para máquinas paralelas de $40$, $50$ e $100$ tarefas em $4$ máquinas, e nas Tabelas~\ref{tab:Res-10m-40-50-100jobs} e \ref{tab:Res-10m-40-50jobs-GA+PR_GA+LS+PR}, que apresentam os resultados para $40$, $50$ e $100$ tarefas em $10$ máquinas. Apesar do método GA+LS+PR atingir boas soluções, pode-se observar na Tabela~\ref{tab:Res-4m-40-50-100jobs} que o algoritmo GA+LS+PR não retorna boas soluções para algumas instâncias de $50$ e $100$ tarefas, quando comparado com as soluções obtidas pelo método ILS-M.
+
+O GA+PR (método baseado em população envolvendo algoritmo genético com reconexão de caminhos entre duas soluções arbitrárias) não gerou bons resultados, comparado com os outros três métodos aproximados propostos (todos baseados em busca local), o que mostra como é importante a estratégia da busca local nos métodos. Os resultados do método GA+PR foram reportados nas Tabelas~\ref{tab:Res-2m-100-150-200jobs-GA+PR_GA+LS+PR}, \ref{tab:Res-4m-40-50-100jobs-GA+PR_GA+LS+PR} e \ref{tab:Res-10m-40-50jobs-GA+PR_GA+LS+PR}, onde pode-se concluir que sem a busca local, o algoritmo genético não consegue atingir boas soluções quando comparado com os outros métodos propostos.
+
+A primeira coluna das tabelas apresenta a quantidade de tarefas utilizadas, a segunda coluna apresenta o número referente a instancia de \textit{benchmark} da literatura, que foi adaptada para a utilização em máquinas paralelas, onde as datas de término sugeridas das instâncias foram divididas pelo número de máquinas.
+As outras colunas das tabelas apresentam a melhor solução obtida pelos algoritmos ILS, ILS+PR, GA+LS+PR e ILS-M, a média de soluções obtidas a partir de três execuções de cada algoritmo para uma determinada instância, quantidade de iterações dos algoritmos para chegar na melhor solução, tempo gasto que os algoritmos levaram para chegar na melhor solução e o tempo total de execução do algoritmos.
+
+Os resultados dos métodos propostos neste trabalho para máquinas paralelas foram comparados com as soluções ótimas obtidas com o algoritmo \textit{branch-and-cut} da ferramenta IBM/ILOG CPLEX 12.4. Onde foi considerada a implementação da formulação indexada pelo tempo baseada no modelo de fluxo em redes para o escalonamento em máquinas paralelas (PI-STO-JIT), proposta neste trabalho, com o auxílio da biblioteca UFFLP. As soluções ótimas obtidas com o algoritmo \textit{branch-and-cut} juntamente com o tempo de execução de cada instância também foram reportadas nas colunas das tabelas com o acrônimo \textbf{\textit{PI-STO-JIT}}.
+
+
+% Algorithm Results for 40, 50, 100, 150 e 200 jobs on 2 machines.
+\begin{landscape}
+\begin{table}[h]
+  \centering
+  \vspace{-0.5cm}
+  \caption{Resultados para $40$, $50$, $100$, $150$ e $200$ tarefas em $2$ máquinas paralelas idênticas ($ P | | \sum{\alpha_{j}E_{j}} + \sum{\beta_{j}T_{j}}$).}
+  \scalebox{0.55}{
+  \begin{tabular}{c|c|c|cccc|cccc|cccc|cccc|ccccc}
+    \hline
+    \multirow{2}[2]{*}{\textbf{$J_{i}$}} & \multirow{2}[2]{*}{\textbf{Inst.}} & \multirow{2}[2]{*}{\textbf{PI-STO-JIT}} & \multicolumn{4}{c|}{\textbf{Melhor Solução}} & \multicolumn{4}{c|}{\textbf{Média das soluções}} & \multicolumn{4}{c|}{\textbf{Iterações/Gerações}} & \multicolumn{4}{c|}{\textbf{Melhor Tempo}} & \multicolumn{5}{c}{\textbf{Tempo Total}} \\
+    \cline{4-24}
+          &     &  & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{PI-STO-JIT} \\
+    \hline
+    \multirow{13}[1]{*}{40} & 1    & 26063 & \textcolor{red}{\textbf{26063}} & \textcolor{red}{\textbf{26063}} & \textcolor{red}{\textbf{26063}} & \textcolor{red}{\textbf{26063}} &  26063.0  &  26063.0  &  26064.0 & 26063.0 & 288   & 182   & 4   & 4 & 1.1   & 1.4   & 0.8  & 1.6 & 8.4   & 15.4  & 33.3 & 13.4 & 1302.87 \\
+              & 11   & 15451 & \textcolor{red}{\textbf{15451}} & \textcolor{red}{\textbf{15451}} & \textcolor{red}{\textbf{15451}} & \textcolor{red}{\textbf{15451}} & 15451.0  &  15451.0  &  15451.0  & 15451.0 & 12    & 8     & 1   & 1 & 0.1   & 0.1   & 0.1  & 0.1  & 7.5   & 13.9  & 31.5 & 13.3 & 157.71 \\
+              & 21   & 41054 & \textcolor{red}{\textbf{41054}} & \textcolor{red}{\textbf{41054}} & \textcolor{red}{\textbf{41054}} & \textcolor{red}{\textbf{41054}} & 41054.0  &  41054.0  &  41054.0 & 41054.0 & 2     & 4     & 1   & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 7.1   & 13.1  & 33.6 & 13.2 & 3.85 \\
+              & 31   & 11679 & \textcolor{red}{\textbf{11679}} & \textcolor{red}{\textbf{11679}} & \textcolor{red}{\textbf{11679}} & \textcolor{red}{\textbf{11679}} & 11679.0  &  11679.0  &  11679.0 & 11679.0 & 3     & 2     & 1    & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 8.1   & 14.9  & 32.8 & 13.1 & 17.61 \\
+              & 41   & 31678 & \textcolor{red}{\textbf{31678}} & \textcolor{red}{\textbf{31678}} & \textcolor{red}{\textbf{31678}} & \textcolor{red}{\textbf{31678}} & 31678.0  &  31678.0  &  31678.0 & 31678.0 & 5     & 2     & 1   & 1 & 0.0   & 0.0   & 0.0  & 0.0 & 7.6   & 13.6  & 32.1 & 12.7 & 10.19 \\
+              & 51   & 20534 & 21709 & 21709 & 21709 & 21709 & 21709.0  &  21709.0  &  21709.0 & 21709.0 & 20    & 3     & 1    & 1 & 0.1   & 0.0   & 0.0  & 0.3 & 8.6   & 16.3  & 31.5 & 13.3 & 9834.40 \\
+              & 61   & 12472 & \textcolor{red}{\textbf{12472}} & \textcolor{red}{\textbf{12472}} & \textcolor{red}{\textbf{12472}} & \textcolor{red}{\textbf{12472}} & 12472.0  &  12472.0  &  12478.0 & 12472.0 & 683   & 278   & 2    & 2 & 2.6   & 2.4   & 0.4  & 0.8 & 9.1   & 16.4  & 33.7 & 14.1 & 341.65 \\
+              & 71   & 47952 & \textcolor{red}{\textbf{47952}} & \textcolor{red}{\textbf{47952}} & \textcolor{red}{\textbf{47952}} & \textcolor{red}{\textbf{47952}} & 47952.0  &  47952.0  &  47952.0 & 47952.0 & 7     & 1     & 1    & 1 & 0.0   & 0.0   & 0.0  & 0.1 & 7.8   & 14.5  & 34.8 & 12.9 & 3.76 \\
+              & 81   & 5278 & \textcolor{red}{\textbf{5278}}  & \textcolor{red}{\textbf{5278}}  & \textcolor{red}{\textbf{5278}} & \textcolor{red}{\textbf{5278}} &   5278.0  &   5278.0  &   5278.7 & 5278.0 & 516   & 3     & 3   & 1 & 2.0   & 0.0   & 0.5  & 0.1 & 9.1   & 17.0  & 37.4 & 16.2 & 388.32 \\
+              & 91   & 26309 & \textcolor{red}{\textbf{26309}} & \textcolor{red}{\textbf{26309}} & \textcolor{red}{\textbf{26309}} & \textcolor{red}{\textbf{26309}} & 26309.0  &  26309.0  &  26309.0  & 26309.0 & 53    & 17    & 1    & 1 & 0.2   & 0.1   & 0.1  & 0.3 & 8.7   & 16.8  & 34.7 & 13.9 & 16.23 \\
+              & 101  & -- & 40300 & 40300 & 40300 & 40300 & 40300.0  &  40300.0  &  40305.0 & 40300.0 & 263   & 34    & 1    & 1 & 1.0   & 0.3   & 0.3  & 0.5 & 8.8   & 16.9  & 32.4 & 13.7 & -- \\
+              & 111  & 18493 & \textcolor{red}{\textbf{18493}} & \textcolor{red}{\textbf{18493}} & \textcolor{red}{\textbf{18493}} & \textcolor{red}{\textbf{18493}} & 18493.0  &  18493.0  &  18493.0 & 18493.0 & 28    & 5     & 1    & 1 & 0.1   & 0.0   & 0.1  & 0.1 & 8.8   & 17.9  & 34.3 & 14.0 & 93.03 \\
+              & 121  & 64584 & \textcolor{red}{\textbf{64584}} & \textcolor{red}{\textbf{64584}} & \textcolor{red}{\textbf{64584}} & \textcolor{red}{\textbf{64584}} &  64584.0  &  64584.0  &  64584.0 & 64584.0 & 96    & 23    & 1   & 1 & 0.3   & 0.2   & 0.1  & 0.1 & 8.2   & 15.1  & 33.2 & 13.6 & 13.95 \\
+        \hline
+        \multirow{13}[1]{*}{50} & 1    & 62985 & 62989 & \textcolor{red}{\textbf{62985}} & \textcolor{red}{\textbf{62985}} & \textcolor{red}{\textbf{62985}} &  62990.3  &  62985.0  &  62989.7 & 62985.3 & 856   & 840   & 3    & 5 & 5.9   & 12.3  & 1.5  & 4.1 & 20.4  & 37.0  & 94.3 & 32.7 & 743.36 \\
+              & 11   & 27871 & \textcolor{red}{\textbf{27871}} & \textcolor{red}{\textbf{27871}} & \textcolor{red}{\textbf{27871}} & \textcolor{red}{\textbf{27871}} &  27871.0  &  27871.0  &  27871.0 & 27871.0 & 55    & 39    & 2    & 1 & 0.4   & 0.6   & 0.7  & 0.5 & 19.5  & 36.6  & 93.3 & 30.4 & 853.47 \\
+              & 21   & 111069 & \textcolor{red}{\textbf{111069}} & \textcolor{red}{\textbf{111069}} & \textcolor{red}{\textbf{111069}} & \textcolor{red}{\textbf{111069}} &  111069.0  &  111069.0  &  111069.0 & 111069.0 & 46    & 1     & 1    & 1 & 0.2   & 0.0   & 0.0  & 0.4 & 16.3  & 30.2  & 87.0 & 27.2 & 19.41 \\
+              & 31   & 18266 & \textcolor{red}{\textbf{18266}} & \textcolor{red}{\textbf{18266}} & \textcolor{red}{\textbf{18266}} & \textcolor{red}{\textbf{18266}} & 18266.0  &  18266.0  &  18266.0 & 18266.0 & 79    & 292   & 2    & 1 & 0.6   & 6.7   & 1.0  & 0.5 & 21.4  & 57.1  & 99.9 & 40.2 & 1966.51 \\
+              & 41   & 38491 & \textcolor{red}{\textbf{38491}} & \textcolor{red}{\textbf{38491}} & \textcolor{red}{\textbf{38491}} & \textcolor{red}{\textbf{38491}} & 38491.0  &  38491.0  &  38523.0 & 38491.0 & 416   & 23    & 2   & 1 & 2.4   & 0.4   & 0.6  & 0.4 & 17.1  & 47.5  & 97.7 & 30.3 & 131.37 \\
+              & 51   & -- & 26152 & 26152 & 26152 & 26152 &  26152.0  &  26152.0  &  26152.0 & 26152.0 & 2044  & 1634  & 3   & 2 & 15.4  & 37.6  & 1.6  & 2.6 & 22.7  & 54.4  & 105.1 & 34.8 & -- \\
+              & 61   & 17456 & \textcolor{red}{\textbf{17456}} & \textcolor{red}{\textbf{17456}} & \textcolor{red}{\textbf{17456}} & \textcolor{red}{\textbf{17456}} &  17456.0  &  17456.0  &  17480.0 & 17456.0 & 559   & 132   & 2    & 2 & 4.0   & 2.6   & 0.8  & 2.2 & 20.8  & 45.5  & 100.2 & 32.3 & 94.8 \\
+              & 71   & 78612 & \textcolor{red}{\textbf{78612}} & \textcolor{red}{\textbf{78612}} & \textcolor{red}{\textbf{78612}} & \textcolor{red}{\textbf{78612}} & 78612.0  &  78612.0  &  78612.0 & 78612.0 & 13    & 67    & 1    & 1 & 0.1   & 1.1   & 0.1  & 0.0 & 18.5  & 32.5  & 90.4 & 28.9 & 14.1 \\
+              & 81   & -- & 7903  & 7903  & 7903  & 7903 &  7903.0  &   7903.0  &   7903.0 & 7903.0 & 92    & 24    & 1    & 1 & 0.7   & 0.4   & 0.3  & 0.4 & 23.0  & 42.2  & 109.8 & 33.6 & -- \\
+              & 91  & 47513 & \textcolor{red}{\textbf{47513}} & \textcolor{red}{\textbf{47513}} & \textcolor{red}{\textbf{47513}} & \textcolor{red}{\textbf{47513}} & 47513.0  &  47513.0  &  47515.7 & 47513.0 & 913   & 9     & 2   & 2 & 7.3   & 0.2   & 0.8  & 1.7 & 20.5  & 37.4  & 98.4 & 31.8 & 662.2 \\
+              & 101  & 40623 & 42973 & 42973 & 42973 & 42973 &  42973.0  &  42973.0  &  42973.0 & 42973.0 & 429   & 71    & 2    & 3 & 3.3   & 1.2   & 1.2  & 2.9 & 23.4  & 40.1  & 98.6 & 34.1 & 9916.9 \\
+              & 111  & 17012 & \textcolor{red}{\textbf{17012}} & \textcolor{red}{\textbf{17012}} & \textcolor{red}{\textbf{17012}} & \textcolor{red}{\textbf{17012}} & 17012.0  &  17012.0  &  17012.0 & 17012.0 & 799   & 69    & 2   & 2 & 6.0   & 1.0   & 1.2  & 1.7 & 22.1  & 37.4  & 116.8 & 35.2 & 7424.6 \\
+              & 121  & 41989 & \textcolor{red}{\textbf{41989}} & \textcolor{red}{\textbf{41989}} & \textcolor{red}{\textbf{41989}} & \textcolor{red}{\textbf{41989}} &  41989.0  &  41989.0  &  41989.0 & 41989.0 & 3     & 14    & 1   & 1 & 0.0   & 0.2   & 0.1  & 0.1 & 21.9  & 36.7  & 96.4 & 29.5 & 547.5 \\
+       \hline
+        \multirow{13}[1]{*}{100} & 1   & --  & 198288 & 198291 & 198282 & \textcolor{red}{\textbf{198281}} &  198289.7  & 198292.3  &  198302.7 & 198281.7 & 4056  & 1233  & 9    & 7 & 223.4  & 143.0  & 63.7 & 102.1 & 330.6  & 575.7  & 2959.7 & 658.1 & -- \\
+              & 11  & --  & 127682 & 127676 & \textcolor{red}{\textbf{127666}} & \textcolor{red}{\textbf{127666}} &  127682.0  & 127678.3  &  127685.0 & 127666.0 & 1338  & 1187  & 6    & 4 & 66.9  & 123.6  & 42.0 & 63.3 & 299.4  & 562.1  & 2957.8 & 464.9 & -- \\
+              & 21  & --  & 457865 & 457865 & 457865 & 457865 & 457865.0  & 457865.0  &  457865.0 & 457865.0 & 18    & 29    & 1    & 1 & 0.8   & 2.5   & 1.5  & 0.5 & 240.4 & 417.9  & 2592.1 & 397.8 & -- \\
+              & 31  & --  & 95053 & 95051 & \textcolor{red}{\textbf{95038}} & \textcolor{red}{\textbf{95038}} &  95088.7  & 95051.0  &  95076.3 & 95038.0 & 5699  & 4805  & 8    & 6 & 357.2  & 607.7  & 73.1 & 107.0 & 376.2 & 632.0  & 3811.4 & 636.6 & -- \\
+              & 41  & --  & 238416 & 238416 & 238416 & 238416 &  238416.0  & 238416.0  &  238416.0 & 238416.0 & 4817  & 265   & 1    & 2 & 250.0  & 28.6  & 3.1  & 28.2 & 320.4 & 531.1  & 2953.4 & 487.0 & -- \\
+              & 51  & --  & 215500 & \textcolor{red}{\textbf{215498}} & \textcolor{red}{\textbf{215498}} & \textcolor{red}{\textbf{215498}} & 215501.3  & 215501.3  &  215498.0 & 215498.0 & 85    & 4614  & 5    & 4 & 6.1   & 595.4  & 36.4 & 69.2 & 383.3  & 645.5  & 2902.9 & 502.7 & -- \\
+              & 61  & --  & 52740 & \textcolor{red}{\textbf{52739}} & 52740 & 52740 &  52755.0  & 52749.0  &  52740.0 & 52740.0 & 467   & 4748  & 2    & 3 & 29.2  & 563.1  & 19.1  & 45.3 & 367.1  & 593.1  & 3090.3 & 491.4 & -- \\
+              & 71  & --  & 327358 & 327358 & 327358 & 327358 &  327360.7 & 327359.0  &  327359.0 & 327358.7 & 1568  & 2196  & 3    & 6 & 87.8  & 233.7  & 20.2 & 79.8 & 361.2  & 531.7  & 3311.1 & 531.1 & -- \\
+              & 81  & --  & 22740 & 22755 & \textcolor{red}{\textbf{22720}} & \textcolor{red}{\textbf{22720}} & 22773.3  & 22761.3  &  22730.7 & 22720.0 & 3653  & 1177  & 6   & 8  & 230.1  & 164.3  & 54.7 & 141.9 & 382.6  & 670.7  & 3393.8 & 616.8 & -- \\
+              & 91  & --  & 130168 & 130169 & \textcolor{red}{\textbf{130165}} & \textcolor{red}{\textbf{130165}} &  130172.0  & 130169.0  &  130165.0  & 130165.0 & 3482  & 979   & 5   & 8 & 204.3  & 118.6  & 37.9  & 115.8 & 347.9  & 677.0  & 2921.0 & 534.2 & -- \\
+              & 101 & --  & 172816 & 172815 & \textcolor{red}{\textbf{172796}} & \textcolor{red}{\textbf{172796}} &  172816.7  & 172819.7  &  172796.0  & 172799.7 & 5740  & 4330  & 6    & 7 & 344.1  & 524.6  & 48.0 & 107.6 & 359.5  & 604.8  & 3527.3 & 541.9 & -- \\
+              & 111  & --  & 85172 & 85164 & \textcolor{red}{\textbf{85160}} & \textcolor{red}{\textbf{85160}} & 85172.0  & 85164.7  &  85181.3  & 85161.3 & 2529  & 1068  & 7   & 8  & 163.7  & 137.6  & 71.6 & 138.0 & 389.1  & 642.7  & 3440.4 & 586.1 & -- \\
+              & 121  & --  & 242250 & 242250 & \textcolor{red}{\textbf{242234}} & \textcolor{red}{\textbf{242234}} &  242253.0  & 242252.7  &  242234.3 & 242234.0 & 4413  & 1988  & 4    & 5 & 253.3  & 228.8  & 29.5 & 75.1 & 334.3  & 576.5  & 2844.1 & 489.8 & -- \\
+        \hline
+        150 & 1   & -- & 421150 & 421145 & \textcolor{red}{\textbf{421141}} & \textcolor{red}{\textbf{421141}} & 421150.0  & 421150.0  & 421141.0  & 421141.0 & 6738  & 4246  & 5    & 4 & 3160.5  & 4256.9  & 226.4 & 501.8 & 4215.8  & 7532.5  & 33043.1 & 13272.4 & -- \\
+        \hline
+        200   & 1  & -- & 746289 & 746246 & \textcolor{red}{\textbf{746190}} & \textcolor{red}{\textbf{746190}} & 746296.3  & 746246.0  & 746190.0 & 746190.0 & 2680  & 999   & 13   & 14 & 3164.7  & 2694.7  &   1464.3 & 6215.5 & 14189.9 & 26843.6 & 45281.7 & 17394.9 & -- \\
+    \hline
+    \end{tabular}}%
+  \label{tab:Res-2m-40-50-100-150-200jobs}%
+\end{table}%
+\end{landscape}
+
+
+% Resultados para 40, 50, 100, 150 e 200 tarefas em 2 máquinas
+\begin{table}[h]
+  \centering
+  \vspace{-0.5cm}
+  \caption{Resultados para $40$, $50$, $100$, $150$ e $200$ tarefas em $2$ máquinas paralelas idênticas ($ P | | \sum{\alpha_{j}E_{j}} + \sum{\beta_{j}T_{j}}$) - GA+PR e GA+LS+PR.}
+  \scalebox{0.6}{
+    \begin{tabular}{c|c|cc|cc|cc|cc|cc}
+    \hline
+    \multirow{2}[4]{*}{\textbf{$J_{i}$}} & \multirow{2}[4]{*}{\textbf{Inst.}} & \multicolumn{2}{c|}{\textbf{Melhor Solução}} & \multicolumn{2}{c|}{\textbf{Média das soluções}} & \multicolumn{2}{c|}{\textbf{Iterações}} & \multicolumn{2}{c|}{\textbf{Melhor tempo}} & \multicolumn{2}{c}{\textbf{Tempo total}} \\
+    \cline{3-12}
+          &       & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} \\
+    \hline
+    \multirow{13}[1]{*}{40} & 1     & 27618 & 26063 & 28716.7 &  26064.0  & 18    & 4     & 0.0   & 0.8   & 2.7   & 33.3 \\
+              & 11    & 17208 & 15451 & 18455.0 &  15451.0  & 18    & 1     & 0.0   & 0.1   & 2.7   & 31.5 \\
+              & 21    & 41479 & 41054 & 41788.3 &  41054.0  & 20    & 1     & 0.0   & 0.0   & 2.7   & 33.6 \\
+              & 31    & 15052 & 11679 & 15623.0 &  11679.0  & 17    & 1     & 0.0   & 0.0   & 2.7   & 32.8 \\
+              & 41    & 33635 & 31678 & 34182.7 &  31678.0  & 16    & 1     & 0.0   & 0.0   & 2.7   & 32.1 \\
+              & 51    & 23543 & 21709 & 24407.7 &  21709.0  & 17    & 1     & 0.0   & 0.0   & 2.7   & 31.5 \\
+              & 61    & 15607 & 12472 & 15884.3 &  12478.0  & 21    & 2     & 0.0   & 0.4   & 4.6   & 33.7 \\
+              & 71    & 48379 & 47952 & 48541.0 &  47952.0  & 20    & 1     & 0.0   & 0.0   & 2.8   & 34.8 \\
+              & 81    & 8416  & 5278  & 8742.0 &   5278.7  & 21    & 3     & 0.0   & 0.5   & 2.7   & 37.4 \\
+              & 91    & 28550 & 26309 & 28709.0 &  26309.0  & 15    & 1     & 0.0   & 0.1   & 2.8   & 34.7 \\
+              & 101   & 44390 & 40300 & 44732.3 &  40305.0  & 19    & 1     & 0.0   & 0.3   & 2.7   & 32.4 \\
+              & 111   & 20133 & 18493 & 21465.3 &  18493.0  & 16    & 1     & 0.0   & 0.1   & 2.8   & 34.3 \\
+              & 121   & 66299 & 64584 & 66692.7 &  64584.0  & 17    & 1     & 0.0   & 0.1   & 2.8   & 33.2 \\
+        \hline
+        \multirow{13}[2]{*}{50} & 1     & 64157 & 62985 &  65046.7  &  62989.7  & 25    & 3     & 0.2   & 1.5   & 5.5   & 94.3 \\
+              & 11    & 29913 & 27871 &  30751.0  &  27871.0  & 24    & 2     & 0.0   & 0.7   & 5.1   & 93.3 \\
+              & 21    & 111696 & 111069 &  112583.3  &  111069.0  & 24    & 1     & 0.0   & 0.0   & 7.3   & 87.0 \\
+              & 31    & 21563 & 18266 &  23221.3  &  18266.0  & 20    & 2     & 0.0   & 1.0   & 5.1   & 99.9 \\
+              & 41    & 39852 & 38491 &  41013.3  &  38523.0  & 24    & 2     & 0.0   & 0.6   & 4.8   & 97.7 \\
+              & 51    & 28391 & 26152 &  30196.0  &  26152.0  & 27    & 3     & 0.1   & 1.6   & 5.0   & 105.1 \\
+              & 61    & 21645 & 17456 &  23662.7  &  17480.0  & 20    & 2     & 0.0   & 0.8   & 5.0   & 100.2 \\
+              & 71    & 79755 & 78612 &  80364.0  &  78612.0  & 25    & 1     & 0.0   & 0.1   & 4.8   & 90.4 \\
+              & 81    & 10520 & 7903  &  12385.7  &   7903.0  & 24    & 1     & 0.0   & 0.3   & 5.0   & 109.8 \\
+              & 91    & 49576 & 47513 &  50216.7  &  47515.7  & 19    & 2     & 0.0   & 0.8   & 7.3   & 98.4 \\
+              & 101   & 44856 & 42973 &  45382.7  &  42973.0  & 24    & 2     & 0.0   & 1.2   & 5.2   & 98.6 \\
+              & 111   & 20511 & 17012 &  21172.3  &  17012.0  & 20    & 2     & 0.0   & 1.2   & 5.1   & 116.8 \\
+              & 121   & 42652 & 41989 &  44042.3  &  41989.0  & 23    & 1     & 0.0   & 0.1   & 5.1   & 96.4 \\
+        \hline
+        \multirow{13}[2]{*}{100} & 1     & 201984 & 198282 & 204359.7 &  198302.7  & 43    & 9     & 0.2   & 63.7  & 39.4  &   2959.7  \\
+              & 11    & 133990 & 127666 & 137521.7 &  127685.0  & 49    & 6     & 0.2   & 42.0  & 38.8  &   2957.8  \\
+              & 21    & 458662 & 457865 & 460534.7 &  457865.0  & 43    & 1     & 0.2   & 1.5   & 37.2  &   2592.1  \\
+              & 31    & 103397 & 95038 & 107093.3 &  95076.3  & 41    & 8     & 0.2   & 73.1  & 36.2  &   3811.4  \\
+              & 41    & 242606 & 238416 & 248163.0 &  238416.0  & 45    & 1     & 0.2   & 3.1   & 39.3  &   2953.4  \\
+              & 51    & 221060 & 215498 & 225274.0 &  215498.0  & 47    & 5     & 0.2   & 36.4  & 39.7  &   2902.9  \\
+              & 61    & 63089 & 52740 & 65742.3 &  52740.0  & 41    & 2     & 0.2   & 19.1  & 37.4  &   3090.3  \\
+              & 71    & 329432 & 327358 & 330643.7 &  327359.0  & 45    & 3     & 0.2   & 20.2  & 36.6  &   3311.1  \\
+              & 81    & 33862 & 22720 & 35559.3 &  22730.7  & 43    & 6     & 0.2   & 54.7  & 39.7  &   3393.8  \\
+              & 91    & 135148 & 130165 & 138527.0 &  130165.0  & 47    & 5     & 0.2   & 37.9  & 37.0  &   2921.0  \\
+              & 101   & 180606 & 172796 & 182098.3 &  172796.0  & 47    & 6     & 0.2   & 48.0  & 37.5  &   3527.3  \\
+              & 111   & 95474 & 85160 & 97889.3 &  85181.3  & 43    & 7     & 0.6   & 71.6  & 50.0  &   3440.4  \\
+              & 121   & 246566 & 242234 & 247854.0 &  242234.3  & 50    & 4     & 0.2   & 29.5  & 35.8  &   2844.1  \\
+        \hline
+          150 & 1     & 429449 & 421141 & 429449.0 & 421141.0 & 68    & 5     & 2.9   & 226.4 & 173.9 & 33043.1 \\
+        \hline
+          200 & 1     & 747385 & 746190 & 749350.7 & 746190.0  & 103   & 13    & 5.7   &   1464.3  & 556.5 & 45281.7  \\
+    \hline
+\end{tabular}}%
+\label{tab:Res-2m-100-150-200jobs-GA+PR_GA+LS+PR}%
+\end{table}%
+
+
+% Algorithm Results for 40, 50 e 100 jobs on 4 machines.
+\begin{landscape}
+\begin{table}[h]
+  \centering
+  \vspace{-0.5cm}
+  \caption{Resultados para $40$, $50$ e $100$ tarefas em $4$ máquinas paralelas idênticas ($ P | | \sum{\alpha_{j}E_{j}} + \sum{\beta_{j}T_{j}}$).}
+  \scalebox{0.55}{
+  \begin{tabular}{c|c|c|cccc|cccc|cccc|cccc|ccccc}
+    \hline
+    \multirow{2}[2]{*}{\textbf{$J_{i}$}} & \multirow{2}[2]{*}{\textbf{Inst.}} & \multirow{2}[2]{*}{\textbf{PI-STO-JIT}} & \multicolumn{4}{c|}{\textbf{Best Solution}} & \multicolumn{4}{c|}{\textbf{Average Solution}} & \multicolumn{4}{c|}{\textbf{Iterations/Generations}} & \multicolumn{4}{c|}{\textbf{Best Time}} & \multicolumn{5}{c}{\textbf{Total Time}} \\
+    \cline{4-24}
+          &     &  & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{PI-STO-JIT} \\
+    \hline
+    \multirow{13}[1]{*}{40} & 1    & 11985 & \textcolor{red}{\textbf{11985}} & \textcolor{red}{\textbf{11985}} & \textcolor{red}{\textbf{11985}} & \textcolor{red}{\textbf{11985}} & 11987.7  &  11985.0  &  11986.7 & 11986.7 & 478   & 60    & 2   & 2 & 6.1   & 1.6   & 0.9  & 6.2 & 60.9  & 97.4  & 187.6 & 63.7 & 126.67 \\
+              & 11   & 8206 & \textcolor{red}{\textbf{8206}}  & \textcolor{red}{\textbf{8206}}  & \textcolor{red}{\textbf{8206}} & \textcolor{red}{\textbf{8206}} & 8206.0  &   8206.0  &   8206.0 & 8206.0 & 22    & 3     & 1    & 1 & 0.2   & 0.1   & 0.1  & 0.1 &  32.7  & 61.3  & 212.3 & 40.1 & 5.89 \\
+              & 21   & 22793 & \textcolor{red}{\textbf{22793}} & \textcolor{red}{\textbf{22793}} & \textcolor{red}{\textbf{22793}} & \textcolor{red}{\textbf{22793}} & 22793.0  &  22793.0  &  22793.0 & 22793.0 & 14    & 4     & 1    & 1 & 0.2   & 0.2   & 0.0  & 0.1 & 33.6  & 62.5  & 183.8 & 42.9 & 1.20 \\
+              & 31   & 5950 & \textcolor{red}{\textbf{5950}}  & \textcolor{red}{\textbf{5950}}  & \textcolor{red}{\textbf{5950}} & \textcolor{red}{\textbf{5950}} & 5950.0  &   5950.0  &   5950.0 & 5950.0 & 18    & 9     & 1   & 1 & 0.2   & 0.2   & 0.1  & 0.2 & 35.7  & 64.0  & 233.4 & 42.3 & 4.20 \\
+              & 41   & 18020 & \textcolor{red}{\textbf{18020}} & \textcolor{red}{\textbf{18020}} & \textcolor{red}{\textbf{18020}} & \textcolor{red}{\textbf{18020}} & 18020.0  &  18020.0  &  18020.0 & 18020.0 & 40    & 2     & 1    & 1 & 0.3   & 0.0   & 0.0  & 0.1 & 33.5  & 59.8  & 192.3 & 42.3 & 5.34 \\
+              & 51   & 8360 & 9104  & 9104  & 9104 & 9104 & 9104.0  &   9104.0  &   9104.0 & 9104.0 & 38    & 53    & 1   & 1 & 0.4   & 0.9   & 0.1  & 0.8 & 39.9  & 72.4  & 200.1 & 30.7 & 306.67 \\
+              & 61   & 7714 & \textcolor{red}{\textbf{7714}}  & \textcolor{red}{\textbf{7714}}  & \textcolor{red}{\textbf{7714}} & \textcolor{red}{\textbf{7714}} & 7714.0  &   7714.0  &   7714.0 & 7714.0 & 42    & 5     & 1   & 1 & 0.5   & 0.2   & 0.2  & 0.8 & 37.9  & 69.7  & 196.3 & 30.3 & 9.36 \\
+              & 71   & 26740 & \textcolor{red}{\textbf{26740}} & \textcolor{red}{\textbf{26740}} & \textcolor{red}{\textbf{26740}} & \textcolor{red}{\textbf{26740}} & 26740.0  &  26740.0  &  26740.0 & 26740.0 & 43    & 1     & 1   & 1 & 0.3   & 0.0   & 0.1  & 0.1 & 33.1  & 59.6  & 178.4 & 25.8 & 0.44 \\
+              & 81   & 2181 & \textcolor{red}{\textbf{2181}}  & \textcolor{red}{\textbf{2181}}  & \textcolor{red}{\textbf{2181}} & \textcolor{red}{\textbf{2181}} & 2181.0  &   2181.0  &   2181.0 & 2181.0 & 385   & 859   & 2   & 2 & 3.2   & 15.7  & 0.9  & 1.9 & 40.3  & 71.9  & 209.6 & 30.5 & 3.51 \\
+              & 91   & 15678 & \textcolor{red}{\textbf{15678}} & \textcolor{red}{\textbf{15678}} & \textcolor{red}{\textbf{15678}} & \textcolor{red}{\textbf{15678}} & 15678.0  &  15678.0  &  15685.0 & 15678.0 & 210   & 144   & 1   & 1 & 1.8   & 2.7   & 0.4  & 0.3 & 39.7  & 69.8  & 198.4 & 31.0 & 6.87 \\
+              & 101  & 8782 & 17819 & 17819 & 17819 & 17819 & 17819.0  &  17819.0  &  17819.0 & 17819.0 & 365   & 160   & 2   & 2 & 3.0   & 2.9   & 1.2  & 1.4 & 39.0  & 69.4  & 193.4 & 29.3 & 844.72 \\
+              & 111  & 11505 & \textcolor{red}{\textbf{11505}} & \textcolor{red}{\textbf{11505}} & \textcolor{red}{\textbf{11505}} & \textcolor{red}{\textbf{11505}} & 11505.0  &  11505.0  &  11505.0 & 11505.0 & 23    & 9     & 1   & 2 & 0.3   & 0.2   & 0.7  & 1.3 & 38.8  & 67.9  & 195.4 & 28.7 & 6.82 \\
+              & 121  & 35783 & \textcolor{red}{\textbf{35783}} & \textcolor{red}{\textbf{35783}} & \textcolor{red}{\textbf{35783}} & \textcolor{red}{\textbf{35783}} & 35783.0  &  35783.0  &  35783.0 & 35783.0 & 44    & 8     & 1    & 1 & 0.4   & 0.2   & 0.2  & 0.0 & 36.3  & 64.0  & 225.2 & 35.5 & 3.28 \\
+        \hline
+        \multirow{13}[0]{*}{50} & 1   & 29222 & 29243 & 29241 & 29229 & 29229 & 29246.3  &  29243.7  & 29230.7 & 29230.0 & 2312  & 3193  & 7    & 5 & 37.1  & 108.7  & 7.7  & 10.5 & 96.4  & 170.4  & 548.8 & 81.4 & 229237.49 \\
+              & 11  & 14828 & \textcolor{red}{\textbf{14828}} & \textcolor{red}{\textbf{14828}} & \textcolor{red}{\textbf{14828}} & \textcolor{red}{\textbf{14828}} & 14828.0  &  14828.0  & 14828.0 & 14828.0 & 270   & 167   & 2   & 1 & 4.1   & 5.0   & 1.8  & 1.6 & 84.8  & 151.3  & 474.1 & 67.5 & 43.77 \\
+              & 21  & 59441 & \textcolor{red}{\textbf{59441}} & \textcolor{red}{\textbf{59441}} & \textcolor{red}{\textbf{59441}} & \textcolor{red}{\textbf{59441}} & 59441.0  &  59441.0  & 59441.0 & 59441.0 & 30    & 16    & 1    & 1 & 0.4   & 0.6   & 0.2  & 0.1 & 80.9  & 145.1  & 419.5 & 62.0 & 2.25 \\
+              & 31  & 8709 & \textcolor{red}{\textbf{8709}}  & \textcolor{red}{\textbf{8709}}  & \textcolor{red}{\textbf{8709}} & \textcolor{red}{\textbf{8709}} & 8709.0  &   8709.0  & 8709.0 & 8709.0 & 4846  & 750   & 6  &  4 & 81.6  & 27.1  & 6.4  & 9.2 & 99.8  & 179.1  & 506.8 & 76.7 & 66.79 \\
+              & 41  & 22009 & \textcolor{red}{\textbf{22009}} & \textcolor{red}{\textbf{22009}} & \textcolor{red}{\textbf{22009}} & \textcolor{red}{\textbf{22009}} & 22009.0  &  22009.0  & 22009.0 & 22009.0 & 90    & 12    & 1    & 1 & 1.4   & 0.4   & 0.1  & 0.1 & 82.9  & 148.7  & 474.9 & 72.5 & 18.39 \\
+              & 51  & -- & 11377 & 11377 & 11380 & 11377 & 11377.0  &  11378.0  & 11380.0 & 11377.0 & 908   & 738   & 5    & 2 & 16.7  & 28.4  & 6.1  & 5.9 & 107.4  & 191.0  & 559.6 & 77.5 & -- \\
+              & 61  & 9376 & \textcolor{red}{\textbf{9376}}  & \textcolor{red}{\textbf{9376}}  & \textcolor{red}{\textbf{9376}} & \textcolor{red}{\textbf{9376}} & 9376.0  &   9376.0  & 9376.0 & 9376.0 & 69    & 25    & 2    & 2 & 1.3   & 0.9   & 2.3  & 3.5 & 97.9  & 167.6  & 586.0 &  75.1 & 15.76 \\
+              & 71  & 42660 & \textcolor{red}{\textbf{42660}} & \textcolor{red}{\textbf{42660}} & \textcolor{red}{\textbf{42660}} & \textcolor{red}{\textbf{42660}} & 42660.0  &  42660.0  & 42660.0 & 42660.0 & 17    & 3     & 1   & 1 & 0.3   & 0.1   & 0.6  & 0.1 & 85.0  & 145.5  & 560.7 & 69.8 & 8.99 \\
+              & 81   & 3835 & \textcolor{red}{\textbf{3835}}  & \textcolor{red}{\textbf{3835}}  & \textcolor{red}{\textbf{3835}} & \textcolor{red}{\textbf{3835}} & 3835.0  &   3835.0  &   3835.0 & 3835.0 & 1577  & 1253  & 3    & 2 & 27.1  & 45.5  & 4.3  & 5.9 & 101.9  & 180.1  & 631.1 & 78.7 & 592.86 \\
+              & 91  & 26659 & \textcolor{red}{\textbf{26659}} & \textcolor{red}{\textbf{26659}} & 26661 & \textcolor{red}{\textbf{26659}} & 26659.0  &  26659.0  &  26661.0 & 26659.0 & 992   & 170   & 3   & 2 & 16.3  & 5.5   & 5.1  & 2.8 & 91.6  & 161.6  & 576.4 & 70.5 & 29.99 \\
+              & 101  & 10669 & 19234 & 19205 & 19205  & 19205 & 19234.0  &  19213.7  &  19205.0 & 19211.0 & 1380  & 1268  & 3   & 4 & 24.0  & 45.8  & 4.7  & 10.7 & 104.4  & 181.2  & 609.7 & 79.0 & 959.31 \\
+              & 111  & 10694 & \textcolor{red}{\textbf{10694}} & \textcolor{red}{\textbf{10694}} & 10714 & \textcolor{red}{\textbf{10694}} & 10694.0  &  10694.0  &  10714.0 & 10694.0 & 5235  & 957   & 2   & 2 & 92.4  & 35.1  & 2.9  & 4.0 & 101.3  & 181.5  & 645.0 & 80.1 & 88.97 \\
+              & 121  & 23884 & \textcolor{red}{\textbf{23884}} & \textcolor{red}{\textbf{23884}} & 23886 & 23885 & 23884.7  &  23884.0  &  23886.0 & 23885.7 & 4241  & 2115  & 3   & 6 & 74.8  & 68.9  & 4.1  & 10.0 & 106.4  & 163.6  & 591.4 & 74.6 & 40.79 \\
+    \hline
+    \multirow{13}[1]{*}{100} & 1   & -- & 95013 & 95027 & 94963 & \textcolor{red}{\textbf{94951}} & 95013.0  &  95027.0  &  94969.7 & 94961.0 & 1574  & 1972  & 14   & 21 &    270.8  & 673.7  &   336.0 & 1520.1 & 1971.5  & 3407.5  & 20336.3 & 4685.8 & -- \\
+              & 11  & -- & 65779 & 65756 & \textcolor{red}{\textbf{65719}} & \textcolor{red}{\textbf{65719}} & 65779.0  &  65771.3  &  65719.0 & 65719.0 & 2599  & 9252  & 7    & 9 &    369.0  & 2739.0  &    168.8  & 314.3 & 1668.9  & 2956.3  & 16975.2 & 1282.1 & -- \\
+              & 21  & -- & \textcolor{red}{\textbf{237398}} & \textcolor{red}{\textbf{237398}} & 237399 & 237399 & 237398.0  &  237398.3  &  237399.0 & 237399.0 & 85    & 2006  & 2    & 1 &      9.4  & 464.9  &     31.4  & 17.2 & 1275.2  & 2296.5  & 19024.0 & 1115.4 & -- \\
+              & 31  & -- & 45797 & 45738 & 45656 & \textcolor{red}{\textbf{45644}} & 45798.3  &  45738.0  &  45656.0 & 45692.3 & 10431 & 4110  & 17   & 16 &   1717.3  & 1409.5  &    473.9 & 1149.6 & 1949.3  & 3396.2  & 19761.5 & 1974.6 & -- \\
+              & 41  & -- & 126409 & \textcolor{red}{\textbf{126408}} & \textcolor{red}{\textbf{126408}} & \textcolor{red}{\textbf{126408}} & 126409.0  &  126408.0  &  126408.0 & 126408.0 & 8829  & 8079  & 1    & 4 &   1080.5  & 2150.7  &     15.7  & 146.8 & 1447.4  & 2661.6  & 21013.6 & 1225.3 & -- \\
+              & 51  & -- & 100649 & 100643 & 100585 & \textcolor{red}{\textbf{100581}} & 100662.7  &  100648.3  &  100585.0 & 100582.3 & 2754  & 6069  & 16   & 16 &    429.4  & 1984.5  &    424.4 & 965.0 & 1861.0  & 3262.1  & 20247.0 & 1874.9 & -- \\
+              & 61  & -- & \textcolor{red}{\textbf{28273}} & 28293 & 28289 & 28274 & 28296.7  &  28295.7  & 28289.0 & 28277.0 & 6907  & 6885  & 9    & 6 &   1049.6  & 2234.9  & 232.3 & 276.7 & 1820.4  & 3246.7  & 19940.2 & 1499.1 & -- \\
+              & 71  & -- & 170705 & 170704 & 170700 & \textcolor{red}{\textbf{170696}} & 170715.0  &  170705.7 & 170700.0 & 170699.0  & 8168  & 304  & 13 & 15    &    980.5  & 79.8  & 405.2 & 730.3 & 1442.4  & 2602.5 & 19954.7 & 1494.0 & -- \\
+              & 81  & -- & 10571 & 10590 & \textcolor{red}{\textbf{10484}} & 10494 & 10598.7  &  10604.7 & 10484.0 & 10504.7  & 10843 & 1934 & 9 & 19    &   1798.2  & 681.7 & 329.9 & 1375.7  & 2000.8  & 3502.5 & 28502.3 & 2010.6 & -- \\
+              & 91  & -- & 70781 & 70770 & \textcolor{red}{\textbf{70755}} & \textcolor{red}{\textbf{70755}} & 70781.0  &  70774.0 & 70755.0 & 70755.0  & 6290  & 2019  & 7 & 5     &    884.9  & 600.0 & 308.9 & 193.8  & 1688.0  & 2994.3 & 19157.5 & 1374.5 & -- \\
+              & 101 & -- & 81206 & 81186 & 81086 & \textcolor{red}{\textbf{81082}} & 81221.0  &  81187.3 & 81086.0 & 81085.3  & 7869  & 2690 & 12 & 15    &   1161.5  & 827.5  & 328.6 & 908.6 & 1781.7  & 3088.2 & 18936.0 & 1659.1 & -- \\
+              & 111 & -- & 47416 & 47372 & 47324 & \textcolor{red}{\textbf{47323}} & 47416.0  &  47372.0 & 47324.0 & 47328.7  & 1007  & 3767 & 11 & 20    &    165.9  & 1314.2 & 324.8 & 1743.2  & 2001.5  & 3495.8 & 47324.0 & 2449.3 & -- \\
+              & 121 & -- & 127706 & 127747 & 127700 & \textcolor{red}{\textbf{127699}} & 127722.7  &  127747.0 & 127700.0 & 127699.0  & 11978 & 7660 & 14 & 13    &   1681.7  & 2265.0  & 315.7 & 688.2 & 1684.5  & 2958.5 & 17600.1 & 1530.2 & -- \\
+    \hline
+    \end{tabular}}%
+  \label{tab:Res-4m-40-50-100jobs}%
+\end{table}%
+\end{landscape}
+
+
+% Resultados para 40, 50 e 100 tarefas em 4 máquinas
+\begin{table}[h]
+  \centering
+  \vspace{-0.5cm}
+  \caption{Resultados para $40$, $50$ e $100$ tarefas em $4$ máquinas paralelas idênticas ($ P | | \sum{\alpha_{j}E_{j}} + \sum{\beta_{j}T_{j}}$) - GA+PR e GA+LS+PR.}
+  \scalebox{0.55}{
+    \begin{tabular}{c|c|cc|cc|cc|cc|cc}
+    \hline
+    \multirow{2}[4]{*}{\textbf{$J_{i}$}} & \multirow{2}[4]{*}{\textbf{Inst.}} & \multicolumn{2}{c|}{\textbf{Melhor Solução}} & \multicolumn{2}{c|}{\textbf{Média das soluções}} & \multicolumn{2}{c|}{\textbf{Iterações}} & \multicolumn{2}{c|}{\textbf{Melhor tempo}} & \multicolumn{2}{c}{\textbf{Tempo total}} \\
+    \cline{3-12}
+          &       & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} \\
+    \hline
+    \multirow{13}[1]{*}{40} & 1     & \multicolumn{1}{c}{12302} & 11985 &  12467.0  &  11986.7  & 21    & 2     & 0.0   & 0.9   & 11.7  & 187.6 \\
+              & 11    & 8501 & 8206  &   8696.7  &   8206.0  & 16    & 1     & 0.0   & 0.1   & 12.6  & 212.3 \\
+              & 21    & 22822 & 22793 &  22830.7  &  22793.0  & 18    & 1     & 0.0   & 0.0   & 12.1  & 183.8 \\
+              & 31    & 6464 & 5950  &   6581.3  &   5950.0  & 18    & 1     & 0.0   & 0.1   & 12.0  & 233.4 \\
+              & 41    & 18108 & 18020 &  18220.0  &  18020.0  & 18    & 1     & 0.0   & 0.0   & 11.8  & 192.3 \\
+              & 51    & 10147 & 9104  &  10506.7  &   9104.0  & 16    & 1     & 0.0   & 0.1   & 14.0  & 200.1 \\
+              & 61    & 8037 & 7714  &   8106.0  &   7714.0  & 21    & 1     & 0.0   & 0.2   & 11.8  & 196.3 \\
+              & 71    & 26778 & 26740 &  26845.3  &  26740.0  & 18    & 1     & 0.0   & 0.1   & 11.8  & 178.4 \\
+              & 81    & 2559 & 2181  &   2877.0  &   2181.0  & 20    & 2     & 0.0   & 0.9   & 11.9  & 209.6 \\
+              & 91    & 15817 & 15678 &  16157.7  &  15685.0  & 19    & 1     & 0.1   & 0.4   & 11.8  & 198.4 \\
+              & 101   & 18094 & 17819 &  18289.0  &  17819.0  & 18    & 2     & 0.0   & 1.2   & 11.8  & 193.4 \\
+              & 111   & 11862 & 11505 &  11912.0  &  11505.0  & 20    & 1     & 0.0   & 0.7   & 12.0  & 195.4 \\
+              & 121   & 35904 & 35783 &  36017.3  &  35783.0  & 20    & 1     & 0.0   & 0.2   & 11.7  & 225.2 \\
+        \hline
+        \multirow{13}[0]{*}{50} & 1     & 29503 & 29229 &  29782.7  & 29230.7 & 25    & 7     & 0.1   & 7.7   & 23.4  & 548.8  \\
+              & 11    & 15082 & 14828 &  15473.7  & 14828.0 & 23    & 2     & 0.1   & 1.8   & 21.7  & 474.1  \\
+              & 21    & 59482 & 59441 &  59514.0  & 59441.0 & 24    & 1     & 0.1   & 0.2   & 23.9  & 419.5  \\
+              & 31    & 9205  & 8709  &   9412.7  & 8709.0 & 22    & 6     & 0.1   & 6.4   & 25.2  & 506.8  \\
+              & 41    & 22111 & 22009 &  22301.7  & 22009.0 & 24    & 1     & 0.1   & 0.1   & 22.9  & 474.9  \\
+              & 51    & 12034 & 11380 &  12535.0  & 11380.0 & 27    & 5     & 0.1   & 6.1   & 22.2  & 559.6  \\
+              & 61    & 9933  & 9376  &  10418.3  & 9376.0 & 25    & 2     & 0.1   & 2.3   & 24.1  & 586.0  \\
+              & 71    & 42818 & 42660 &  42924.7  & 42660.0 & 26    & 1     & 0.1   & 0.6   & 22.3  & 560.7  \\
+              & 81    & 4686  & 3835  &   4929.3  &   3835.0  & 22    & 3     & 0.1   & 4.3   & 22.1  & 631.1  \\
+              & 91    & 26745 & 26661 &  27110.7  &  26661.0  & 24    & 3     & 0.1   & 5.1   & 24.8  & 576.4  \\
+              & 101   & 19873 & 19205 &  20151.0  &  19205.0  & 25    & 3     & 0.1   & 4.7   & 23.9  & 609.7  \\
+              & 111   & 11297 & 10714 &  11366.0  &  10714.0  & 25    & 2     & 0.1   & 2.9   & 21.8  & 645.0  \\
+              & 121   & 23973 & 23886 &  24059.3  &  23886.0  & 25    & 3     & 0.1   & 4.1   & 22.2  & 591.4  \\
+         \hline
+         \multirow{6}[1]{*}{100} & 1     & 95597 & 94963 &  95972.0  &  94969.7  & 49    & 14    & 0.5   &    336.0  & 168.7  & 20336.3  \\
+              & 11    & 66592 & 65719 &  66846.3  &  65719.0  & 50    & 7     & 0.5   &    168.8  & 171.1  & 16975.2  \\
+              & 21    & 237425 & 237399 &  237459.7  &  237399.0  & 46    & 2     & 0.4   &     31.4  & 179.1  & 19024.0  \\
+              & 31    & 46623 & 45656 &  47593.7  &  45656.0  & 46    & 17    & 0.4   &    473.9  & 167.5  & 19761.5  \\
+              & 41    & 127087 & 126408 &  127283.3  &  126408.0  & 48    & 1     & 0.5   &     15.7  & 165.4  & 21013.6  \\
+              & 51    & 101643 & 100585 &  102307.3  &  100585.0  & 51    & 16    & 0.6   &    424.4  & 168.2  & 20247.0  \\
+              & 61    & 29173 & 28289 &  30411.0  & 28289.0 & 45    & 9     & 0.5   & 232.3 & 172.0  & 19940.2 \\
+\hline
+\end{tabular}}%
+\label{tab:Res-4m-40-50-100jobs-GA+PR_GA+LS+PR}%
+\end{table}%
+
+
+% Algorithm Results for 40, 50 and 100 jobs on 10 machines.
+\begin{landscape}
+\begin{table}[h]
+  \centering
+  \vspace{-0.5cm}
+  \caption{Resultados para $40$, $50$ e $100$ tarefas em $10$ máquinas paralelas idênticas ($ P | | \sum{\alpha_{j}E_{j}} + \sum{\beta_{j}T_{j}}$).}
+  \scalebox{0.55}{
+  \begin{tabular}{c|c|c|cccc|cccc|cccc|cccc|ccccc}
+    \hline
+    \multirow{2}[2]{*}{\textbf{$J_{i}$}} & \multirow{2}[2]{*}{\textbf{Inst.}} & \multirow{2}[2]{*}{\textbf{PI-STO-JIT}} & \multicolumn{4}{c|}{\textbf{Best Solution}} & \multicolumn{4}{c|}{\textbf{Average Solution}} & \multicolumn{4}{c|}{\textbf{Iterations/Generations}} & \multicolumn{4}{c|}{\textbf{Best Time}} & \multicolumn{5}{c}{\textbf{Total Time}} \\
+    \cline{4-24}
+          &     &  & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} & \textbf{PI-STO-JIT} \\
+    \hline
+        \multirow{5}[0]{*}{40} & 1   & 3988 & 3988  & 3988  & 3988 & 3988 & 3988.0  & 3988.0  &   3988.0 & 3988.0 & 49    & 4     & 2    & 1 & 0.7   & 0.1   & 4.5  & 0.5 & 195.9  & 333.0  & 4229.0 & 47.5 & 0.14 \\
+              & 31   & 3558 & 3558  & 3558  & 3558  & 3558 & 3558.0  & 3558.0  &   3558.0  & 3558.0 & 8     & 7     & 1   & 1 & 0.1   & 0.2   & 4.9  & 0.0 & 200.1  & 337.4  & 5082.1 & 47.3 & 0.38 \\
+              & 61   & 5985 & 5985  & 5985  & 5985 & 5985 & 5985.0  & 5985.0  &   5985.0 & 5985.0 & 4     & 1     & 1    & 1 & 0.1   & 0.0   & 5.9 & 0.0 & 194.3  & 325.1  & 4749.9 & 47.5 & 0.40 \\
+              & 91   & 9818 & 9818  & 9818  & 9818 & 9818 & 9818.0  & 9818.0  &   9818.0 & 9818.0 & 41    & 76    & 1    & 1 & 0.6   & 2.5   & 8.6  & 0.0 & 191.0  & 320.4  & 4849.7 & 47.5 & 0.89 \\
+              & 121  & 18818 & 18818 & 18818 & 18818 & 18818 & 18818.0  & 18818.0  &  18818.0 & 18818.0 & 74    & 2     & 1    & 1 & 1.3   & 0.1   & 4.0  & 0.0 & 186.8  & 312.0  & 4991.4 & 44.9 & 0.67 \\
+        \hline
+        \multirow{5}[0]{*}{50} & 1    & 9006 & 9171  & 9168  & 9154 & 9154 & 9171.0  & 9168.0  & 9157.3 & 9157.3 & 2216  & 4660  & 5  & 8  & 77.6  & 334.3  & 96.6  & 30.0 & 529.9  & 894.7  & 15211.1 & 145.9 & 17.01 \\
+              & 31   & 3839 & \textcolor{red}{\textbf{3839}}  & \textcolor{red}{\textbf{3839}}  & \textcolor{red}{\textbf{3839}}  & \textcolor{red}{\textbf{3839}} & 3839.0  & 3839.0  &   3839.0 & 3839.0 & 189   & 341   & 3    & 1 & 6.5   & 23.8  & 53.8 & 2.9 & 524.3  & 881.7  & 11387.9 & 125.6 & 1.49 \\
+              & 61   & 5856 & \textcolor{red}{\textbf{5856}}  & \textcolor{red}{\textbf{5856}}  & \textcolor{red}{\textbf{5856}}  & \textcolor{red}{\textbf{5856}} & 5856.0  & 5856.0  &   5856.0 & 5856.0 & 29    & 36    & 1    & 1 & 0.9   & 2.3   & 0.2  & 0.2 & 480.1  & 800.3  & 7480.1 & 115.1 & 1.60 \\
+              & 91   & 14527 & \textcolor{red}{\textbf{14527}} & \textcolor{red}{\textbf{14527}} & \textcolor{red}{\textbf{14527}} & \textcolor{red}{\textbf{14527}} & 14527.0  & 14527.0  &  14527.0 & 14527.0 & 89    & 22    & 1    & 1 & 3.2   & 1.5   & 5.7  & 1.3 & 512.7  & 857.2  & 9463.2 & 144.0 & 1.23 \\
+              & 121  & 13346 & \textcolor{red}{\textbf{13346}} & \textcolor{red}{\textbf{13346}} & \textcolor{red}{\textbf{13346}} & \textcolor{red}{\textbf{13346}} & 13346.0  & 13346.0  &  13346.0 & 13346.0 & 390   & 5     & 2    & 1 & 13.1  & 0.3   & 10.0 & 0.1 & 495.4  & 829.5  & 7646.5 & 119.6 & 0.85 \\
+        \hline
+        \multirow{5}[1]{*}{100} & 1    & 31489 & 33362 & 33344 & 33278 & 33280 & 33365.3  &  33354.0 & 33278.0 & 33289.3  & 14449 & 18239 & 839 & 40    & 5026.6  &  12986.5 & 97462.8 & 7434.5  & 10440.7  &  17909.0 & 123686.2 & 19265.8 & 246.5 \\
+              & 31   & 17012 & 17127 & 17150 & 17022 & 17021 & 17149.7  &  17154.3 & 17022.0 & 17043.7  & 18965 & 7374 & 20 & 21    & 6388.0  &   5023.4 & 2499.6 & 4079.2  & 10146.1  &  17047.1 & 128010.8 & 9060.8 & 1724.9 \\
+              & 61   & 14634 & 14691 & 14684 & 14661 & 14663 & 14698.7  & 14684.0 & 14661.0 & 14664.0  & 26049 & 11799 & 4 & 13    & 8782.6  & 7984.5 & 636.4 & 1770.1 & 10143.7  & 16924.9 & 128529.3 & 3529.7 & 510.5 \\
+              & 91   & 35784 & 35813 & 35800 & 35788 & 35791 & 35816.0  & 35805.7 & 35788.0 & 35791.0  & 8320  & 855  & 15 & 12    & 2724.2  & 562.0 & 1857.4 & 1047.1  & 9877.4  & 16591.3 & 151380.8 & 3303.5 & 134.1 \\
+              & 121  & 59347 & 59389 & 59389 & \textcolor{red}{\textbf{59347}} & 59352 & 59393.7  & 59398.3 & 59347.0 & 59353.3 & 10665 & 4974 & 15 & 21    & 3377.5  & 3102.4 & 1992.0 & 3155.6 & 9494.8  & 15617.3 & 132072.4 & 6964.1 & 239.8 \\
+      \hline
+    \end{tabular}}%
+  \label{tab:Res-10m-40-50-100jobs}%
+\end{table}%
+\end{landscape}
+
+
+% Resultados para 40, 50 e 100 tarefas em 10 máquinas
+\begin{table}[h]
+  \centering
+  \vspace{-0.5cm}
+  \caption{Resultados para $40$, $50$ e $100$ tarefas em $10$ máquinas ($ P | | \sum{\alpha_{j}E_{j}} + \sum{\beta_{j}T_{j}}$) - GA+PR e GA+LS+PR.}
+  \scalebox{0.6}{
+    \begin{tabular}{c|c|cc|cc|cc|cc|cc}
+    \hline
+    \multirow{2}[4]{*}{\textbf{Tarefas}} & \multirow{2}[4]{*}{\textbf{Inst.}} & \multicolumn{2}{c}{\textbf{Melhor Solução}} & \multicolumn{2}{c}{\textbf{Média das Soluções}} & \multicolumn{2}{c}{\textbf{Iterações}} & \multicolumn{2}{c}{\textbf{Melhor Tempo}} & \multicolumn{2}{c}{\textbf{Tempo Total}} \\
+    \cline{3-12}
+          &       & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} \\
+    \hline
+    \multirow{5}[1]{*}{40} & 1     & 4025  & 3988  &   4074.0  &   3988.0  & 22    & 2     & 0.2   & 4.5   & 129.3  & 4229.0  \\
+              & 31    & 3570  & 3558  &   3587.3  &   3558.0  & 17    & 1     & 0.1   & 4.9   & 131.2  & 5082.1  \\
+              & 61    & 6039  & 5985  &   6040.7  &   5985.0  & 14    & 1     & 0.1   & 5.9   & 131.8  & 4749.9  \\
+              & 91    & 9852  & 9818  &   9859.7  &   9818.0  & 15    & 1     & 0.1   & 8.6   & 128.2  & 4849.7  \\
+              & 121   & 18818 & 18818 &  18825.7  &  18818.0  & 18    & 1     & 0.2   & 4.0   & 124.9  & 4991.4  \\
+        \hline
+        \multirow{5}[1]{*}{50} & 1     & 9295  & 9154 &   9306.3  & 9157.3 & 25    & 5     & 0.3   & 96.6  & 234.9  & 15211.1  \\
+              & 31    & 3882  & 3839  &   3917.0  &   3839.0  & 23    & 3     & 0.3   & 53.8  & 248.9  & 11387.9 \\
+              & 61    & 5899  & 5856  &   5916.7  &   5856.0  & 19    & 1     & 0.2   & 0.2   & 254.4  & 7480.1 \\
+              & 91    & 14544 & 14527 &  14558.3  &  14527.0  & 23    & 1     & 0.3   & 5.7   & 243.9  & 9463.2 \\
+              & 121   & 13354 & 13346 &  13378.0  &  13346.0  & 23    & 2     & 0.3   & 10.0  & 237.6  & 7646.5 \\
+        \hline
+        \multirow{5}[1]{*}{100} & 1     & 33342  & 33278 &   33384.3  & 33278.0 & 60    & 839     & 4.2   & 97462.8  & 1780.7  & 123686.2  \\
+              & 31    & 17205  & 17022  &   17305.7  &   17022.0  & 49    & 20     & 5.5   & 2499.6  & 1849.3 & 128010.8\\
+              & 61    & 14785  & 14661  &   14836.0  &   14661.0  & 57    & 4     & 2.8   & 636.4   & 1863.2  & 128529.3 \\
+              & 91    & 35877 & 35788 &  35898.7  &  35788.0  & 47    & 15     & 2.5   & 1857.4   & 1778.7  & 151380.8 \\
+              & 121   & 59458 & 59347 &  59474.0  &  59347.0  & 47    & 15     & 2.0   & 1992.0  & 1834.2  & 132072.4 \\
+\hline
+\end{tabular}}%
+\label{tab:Res-10m-40-50jobs-GA+PR_GA+LS+PR}%
+\end{table}%
+
+
+\subsection{Análise do impacto do critério de desempate}
+
+A Tabela~\ref{tab:CVDAL} apresenta a quantidade de soluções com empate, onde foram considerados somente os métodos ILS, ILS+PR e GA+LS+PR para fins de comparação e análise. Uma instância de $40$ tarefas com datas de término arbitrárias foi utilizada, incluindo as funções objetivo que envolvem atraso ponderado ou não de tarefas ($\sum T_{j}$ e $\sum w_{j} T_{j}$), antecipação ponderada ou não de tarefas ($\sum E_{j}$ e $\sum w_{j} E_{j}$) e a forma combinada de ambos ($\sum E_{j} + \sum T_{j}$ e $\sum \alpha_{j} E_{j} + \sum \beta_{j} T_{j}$), onde pode-se observar que a versão não ponderada possui um número maior de soluções com empate do que a versão ponderada do problema na maioria dos casos. Assim, conclui-se que a função objetivo de atraso não ponderado é a que apresenta um número maior de soluções com empate, quando comparado com a função objetivo de antecipação não ponderada e antecipação e atraso não ponderados.
+
+Isso pode ser explicado através de como a solução é gerada no algoritmo, ou seja, a medida que as tarefas vão sendo escalonadas nas máquinas, a probabilidade das primeiras tarefas do escalonamento estarem atrasadas é bem menor do que as tarefas posteriores do escalonamento. Assim, é provável que se tenha tarefas com valor de atraso igual a zero, logo, como o problema é de minimização, é interessante que o algoritmo guarde a solução que possui o menor número de tarefas atrasadas possível, não restando muitas possibilidades de melhores soluções que o algoritmo possa explorar.
+
+Por outro lado, quando se tem uma função objetivo com antecipação de tarefas, quando a solução é gerada pelo algoritmo, vão aparecer muitas tarefas com valores de antecipação, onde, a partir daí o algoritmo tende a procurar por diferentes ou melhores soluções que minimize a quantidade de tarefas antecipadas no escalonamento. Assim, tem-se uma grande quantidade de soluções diferentes a serem exploradas pelo algoritmo e, quando se consideram pesos (ou penalidades), a possibilidade de soluções é ainda maior. Dessa forma, pode-se concluir que quanto maior for a quantidade de soluções diferentes existentes no espaço de busca, menor será a quantidade de soluções com empate no escalonamento. E quanto mais se aumenta a número de máquinas, menores são as possibilidades de solução do escalonamento, pois apesar de se ter mais máquinas, a linha do tempo do escalonamento é diminuída, dessa forma, tem-se uma quantidade maior de soluções com empate. 
+
+A quantidade de soluções com empate varia de um algoritmo para outro devido a quantidade de buscas locais realizadas a cada iteração dos algoritmos. Assim, como no algoritmo GA+LS+PR são realizadas mais buscas locais que nos algoritmos ILS e ILS+PR, a quantidade de soluções com empate obtidas neste método é bem maior.
+
+
+% Tabela de soluções com empate
+\begin{table}[t]
+  \centering
+  \caption{Quantidade de soluções com empate obtidas pelos algoritmos ILS, ILS+PR e GA+LS+PR para o problema de escalonamento com antecipação e atraso ponderado de tarefas com datas de término arbitrárias para a instância de número $1$ de $40$ tarefas.}
+  \scalebox{0.8}{
+   \begin{tabular}{c|c|c|c|c}
+    \hline
+    Função objetivo & Máquinas & ILS   & ILS+PR & GA+LS+PR \\
+    \hline
+    \multirow{4}[2]{*}{$\sum T_{j}$} & 1     & 4982583 & 8294285 & 9744331 \\
+          & 2     & 7461200 & 12258312 & 24456336 \\
+          & 4     & 6189656 & 10302468 & 39702794 \\
+          & 10    & 23573716 & 39242995 & 296615545 \\
+    \hline
+    \multirow{4}[2]{*}{$\sum w_{j} T_{j}$} & 1     & 5094888 & 8488568 & 4816394 \\
+          & 2     & 3979632 & 6624737 & 6457365 \\
+          & 4     & 2418612 & 4024735 & 9496217 \\
+          & 10    & 9796746 & 16268583 & 115939433 \\
+    \hline
+    \multirow{4}[2]{*}{$\sum E_{j}$} & 1     & 769228 & 1271385 & 597709 \\
+          & 2     & 1807860 & 3045609 & 2136579 \\
+          & 4     & 4367476 & 7269019 & 15488380 \\
+          & 10    & 21749075 & 36284413 & 231039689 \\
+    \hline
+    \multirow{4}[2]{*}{$\sum w_{j} E_{j}$} & 1     & 562984 & 914802 & 305979 \\
+          & 2     & 1635824 & 2745267 & 1774333 \\
+          & 4     & 4311023 & 7171821 & 12688689 \\
+          & 10    & 20381769 & 34114276 & 159409070 \\
+    \hline
+    \multirow{4}[2]{*}{$\sum E_{j} + \sum T_{j}$} & 1     & 119267 & 198623 & 23801 \\
+          & 2     & 399826 & 661178 & 379473 \\
+          & 4     & 1351294 & 2260642 & 3186635 \\
+          & 10    & 11668627 & 19458863 & 85634541 \\
+    \hline
+    \multirow{4}[2]{*}{$\sum \alpha_{j} E_{j} + \sum \beta_{j} T_{j}$} & 1     & 109408 & 181086 & 14208 \\
+          & 2     & 260608 & 432074 & 49423 \\
+          & 4     & 917908 & 1527337 & 1391734 \\
+          & 10    & 8314025 & 13810700 & 49588344 \\
+    \hline
+    \end{tabular}}%
+  \label{tab:CVDAL}%
+\end{table}%
+
+
+
+\subsection{Comparação dos critérios de configuração dos métodos propostos}
+
+Esta seção apresenta a parametrização dos algoritmos deste trabalho. A Tabela~\ref{tab:MetodosConf} apresenta as configurações utilizadas nos algoritmos que começa pelo número de iterações/gerações, a lista sequencial ou sequência única foi a representação da solução utilizada, as soluções iniciais geradas foram sequências aleatórias geradas a partir de uma determinada semente, os algoritmos foram executados três vezes para cada instância, sendo que cada execução contou com uma semente diferente, o critério de diversidade utilizado foi a geração de uma nova solução a cada iteração para o ILS, ILS+PR e ILS-M e, para os algoritmos GA+PR e GA+LS+PR, foi utilizada a mutação. A convergência considerada nos algoritmos ILS, ILS+PR e ILS-M foi a convergência monotônica, que é a convergência que guarda a melhor solução e trata critério de desempate. Esta convergência também é utilizada no GA+LS+PR juntamente com o Elitismo, no GA+PR é utilizado somente o Elitismo. O critério de parada utilizado é o número de iterações/gerações. 
+
+A busca por melhores soluções dos algoritmos ILS e ILS+PR baseia-se na busca simples (\textit{single-start}), que é aquela busca em que uma solução aleatória é gerada, seguida de melhoria através da busca local. Já nos algoritmos GA+PR e GA+LS+PR, por serem métodos baseados em população, eles fazem uso da busca múltipla (\textit{multi-start}) de soluções, onde a cada iteração tem-se várias soluções que são seguidas de melhorias que são: Cruzamento, Busca Local e Reconexão de Caminhos para o algoritmo GA+LS+PR e Cruzamento e Reconexão de Caminhos para o algoritmo GA+PR. O algoritmo ILS-M, método de otimização global com busca múltipla, considera um conjunto de soluções a cada iteração e possui a Busca Local como critério de melhoria.
+
+Além das configurações da Tabela~\ref{tab:MetodosConf}, os algoritmos GA+PR e GA+LS+PR contaram com uma configuração extra, apresentada na Tabela~\ref{tab:GAConf}, onde no primeiro $1/3$ de geração do algoritmo, considera-se a diversidade de soluções onde é aplicado $5\%$ de Elitismo, $50\%$ de Mutação, $30\%$ de Cruzamento e $15\%$ de Cruzamento com Busca Local como objetivo de se explorar a maior parte possível do espaço de soluções. Dessa forma, no restante das gerações, $2/3$ da geração, é considerada a maior convergência possível de melhores soluções que o algoritmo possa encontrar no espaço de busca. Assim, foi considerado $10\%$ de Elitismo, $30\%$ de Mutação, $10\%$ de Cruzamento, $20\%$ de Cruzamento com Busca Local e $30\%$ de Cruzamento com Busca Local e Reconexão de Caminhos.
+
+\begin{table}[htbp]
+  \centering
+  \caption{Configuração dos métodos propostos.}
+  \scalebox{0.85}{
+    \begin{tabular}{p{3cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}|p{2.5cm}}
+    \hline
+    \textbf{Configurações} & \textbf{ILS} & \textbf{ILS+PR} & \textbf{GA+PR} & \textbf{GA+LS+PR} & \textbf{ILS-M} \\
+    \hline
+    Número de gerações/iterações & $30nm$  & $25nm$  & $40nm$  & $2nm$ & $12n$ \\
+    \hline
+    Representação da solução & Lista sequencial & Lista sequencial & Lista sequencial & Lista sequencial & Lista sequencial \\
+    \hline
+    Critério de geração de soluções iniciais & Soluções aleatórias geradas a partir de uma semente inicial & Soluções aleatórias geradas a partir de uma semente inicial & Soluções aleatórias geradas a partir de uma semente inicial & Soluções aleatórias geradas a partir de uma semente inicial & Soluções aleatórias geradas a partir de uma semente inicial \\
+    \hline
+    Critério de diversidade & Geração de uma nova solução a cada iteração & Geração de uma nova solução a cada iteração & Mutação & Mutação & Geração de novas soluções a cada iteração \\
+    \hline
+    Critério de melhoria & Busca Local & Busca Local e Reconexão de Caminhos & Cruzamento e Reconexão de Caminhos & Cruzamento, Busca Local e Reconexão de Caminhos & Busca Local \\
+    \hline
+    Convergência & monotônica (guarda melhor solução e trata critério de desempate) & monotônica (guarda melhor solução e trata critério de desempate) & Elitismo & Elitismo, monotônica (guarda melhor solução e trata critério de desempate) & monotônica (guarda melhor solução e trata critério de desempate) \\
+    \hline
+    Critério de parada & Número de iterações & Número de iterações & Número de gerações & Número de gerações & Número de iterações \\
+    \hline
+    Estratégia de busca & Busca simples & Busca Simples & Busca múltipla & Busca múltipla & Busca múltipla \\
+    \hline
+    \end{tabular}}%
+  \label{tab:MetodosConf}%
+\end{table}%
+
+
+\begin{table}[htbp]
+  \centering
+  \caption{Configuração do algoritmo genético.}
+    \begin{tabular}{p{4cm}|p{3.4cm}|p{3.4cm}}
+    \hline
+    \multirow{3}[6]{*}{Configurações} & \multicolumn{2}{c}{Gerações} \\ \cline{2-3}
+                                      & \multicolumn{1}{c|}{$1/3$} & \multicolumn{1}{c}{$2/3$} \\
+                                      & mais diversidade e \linebreak menos convergência & menos diversidade e \linebreak mais convergência \\
+    \hline
+    Tamanho da população & \multicolumn{1}{c|}{2nm}   & \multicolumn{1}{c}{2nm} \\
+    \hline
+    Elitismo & \multicolumn{1}{c|}{5\%}   & \multicolumn{1}{c}{10\%} \\
+    \hline
+    Mutação & \multicolumn{1}{c|}{50\%}  & \multicolumn{1}{c}{30\%} \\
+    \hline
+    Cruzamento & \multicolumn{1}{c|}{30\%}  & \multicolumn{1}{c}{10\%} \\
+    \hline
+    Cruzamento + Busca Local  &  \multicolumn{1}{c|}{15\%}  & \multicolumn{1}{c}{20\%} \\
+    \hline
+    Cruzamento + Busca Local + Reconexão de Caminhos & \multicolumn{1}{c|}{0\%}   & \multicolumn{1}{c}{30\%} \\
+    \hline
+    \end{tabular}%
+  \label{tab:GAConf}%
+\end{table}%
+
+
+\subsection{Análise dos métodos}
+
+Os gráficos apresentados nas Figuras~\ref{fig:Graph-40-50-100-150-200-300Jobs-1m},~\ref{fig:Graph-40-50-100-150-200Jobs-2m},~\ref{fig:Graph-40-50-100Jobs-4m} e \ref{fig:Graph-40-50-100Jobs-10m} apresentam a curvas de crescimento relacionadas ao tempo de execução dos métodos \textit{ILS}, \textit{ILS+PR}, \textit{GA+PR}, \textit{GA+LS+PR} e \textit{ILS-M} nos ambientes mono e multiprocessados, onde pode-se observar que o tempo de execução dos métodos aumenta a medida que se aumenta o número de máquinas. 
+
+A curva do método \textit{GA+PR} apresentou um crescimento bem inferior em relação aos outros métodos mas, apesar disso, os resultados obtidos com esse método não foram muito satisfatórios. A curva do método \textit{ILS} foi a segunda menor em relação aos outros métodos, mas apesar do baixo tempo de execução, o método não consegue atingir soluções ótimas quando se aumenta o número de tarefas (instâncias a partir de $100$ tarefas). A terceira menor curva apresentada foi obtida pelo método \textit{ILS-M}, este método foi o que obteve melhores resultados, atingindo soluções ótimas na maioria das instâncias testadas. O \textit{ILS+PR} também conseguiu obter boas soluções, mas apesar disto, o método não consegue atingir soluções ótimas em algumas instâncias maiores, este método foi o que apresentou a quarta maior curva. A quinta maior curva foi apresentada pelo método \textit{GA+LS+PR}, que também retornou soluções ótimas para a maioria dos casos testados, mesmo para instâncias maiores (assim como o ILS-M), mas este método foi o que apresentou o maior tempo de execução.
+
+
+\begin{figure}
+\centering
+   \includegraphics[width=1.1\textwidth]{./imagens/Graph-40-50-100-150-200-300Jobs-1m.eps}
+   \caption{Comparação da média dos tempos de execução dos métodos ILS, ILS+PR, GA+PR, GA+LS+PR e ILS-M para $40$, $50$, $100$, $150$, $200$ e $300$ tarefas em ambiente monoprocessado.}
+   \label{fig:Graph-40-50-100-150-200-300Jobs-1m}
+\end{figure}
+
+
+\begin{figure}
+\centering
+   \includegraphics[width=1.1\textwidth]{./imagens/Graph-40-50-100-150-200Jobs-2m.eps}
+   \caption{Comparação da média dos tempos de execução dos métodos ILS, ILS+PR, GA+PR, GA+LS+PR e ILS-M para $40$, $50$, $100$, $150$ e $200$ tarefas em $2$ máquinas.}
+   \label{fig:Graph-40-50-100-150-200Jobs-2m}
+\end{figure}
+
+
+\begin{figure}
+\centering
+   \includegraphics[width=1.1\textwidth]{./imagens/Graph-40-50-100Jobs-4m.eps}
+   \caption{Comparação da média dos tempos de execução dos métodos ILS, ILS+PR, GA+PR, GA+LS+PR e ILS-M para $40$, $50$ e $100$ tarefas em $4$ máquinas.}
+   \label{fig:Graph-40-50-100Jobs-4m}
+\end{figure}
+
+
+\begin{figure}
+\centering
+   \includegraphics[width=1.1\textwidth]{./imagens/Graph-40-50-100Jobs-10m.eps}
+   \caption{Comparação da média dos tempos de execução dos métodos ILS, ILS+PR, GA+PR, GA+LS+PR e ILS-M para $40$, $50$ e $100$ tarefas em $10$ máquinas.}
+   \label{fig:Graph-40-50-100Jobs-10m}
+\end{figure}
+
+
+\section{Resultados - branch-and-cut via CPLEX}
+
+Os resultados para o método exato utilizado são apresentados na Tabelas~\ref{tab:Res-2m-40-50-100-150-200jobs}, \ref{tab:Res-4m-40-50-100jobs} e \ref{tab:Res-10m-40-50-100jobs} nas colunas com o acrônimo \textit{PI-STO-JIT}, onde pode-se observar que os métodos aproximados apresentaram melhor desempenho em comparação com o algoritmo \textit{branch-and-cut} do CPLEX, especialmente quando o número de tarefas é bem maior que o número de máquinas disponíveis, ou seja, o custo de transformar uma lista sequencial no escalonamento propriamente dito utilizando regras de despacho (\textit{dispatching}) é \textbf{proporcional} ao número de máquinas.
+Nos resultados obtidos, o número de variáveis é \textbf{inversamente proporcional} ao número de máquinas, ou seja, o parâmetro $T$ (tempo total) diminui quando o parâmetro $m$ (número de máquinas) aumenta. O parâmetro $T$ é calculado da seguinte forma:
+
+\begin{equation}
+  T = \left\lfloor\dfrac{\sum_{j=1}^{n} p_j - p_{max}}{m}\right\rfloor + p_{max}.
+\end{equation}
+
+\noindent Onde $p_{max}$ é o maior tempo de processamento do conjunto de tarefas. Isto explica o porquê do modelo matemático, implementado no CPLEX, se torna mais rápido que os algoritmos aproximados quando se aumenta o número de máquinas.
+
+
+\section{Considerações Finais}
+
+Este capítulo apresentou os experimentos computacionais realizados para os métodos propostos neste trabalho, considerando a minimização das penalidades de antecipação e atraso de tarefas, nos ambientes mono e multiprocessado. Os resultados dos métodos foram reportados nas Tabelas~\ref{tab:Res-1m-40-50-100-150-200-300jobs}, \ref{tab:Res-1m-40-50-100-150-200-300jobs-GA+PR_GA+LS+PR}, \ref{tab:Res-2m-40-50-100-150-200jobs}, \ref{tab:Res-2m-100-150-200jobs-GA+PR_GA+LS+PR}, \ref{tab:Res-4m-40-50-100jobs}, \ref{tab:Res-4m-40-50-100jobs-GA+PR_GA+LS+PR}, \ref{tab:Res-10m-40-50-100jobs} e \ref{tab:Res-10m-40-50jobs-GA+PR_GA+LS+PR}. Também foram apresentados: análise do impacto do critério de desempate de soluções no espaço de busca, comparação dos critérios de configuração dos métodos propostos e análise gráfica dos resultados obtidos.
+
+Os experimentos computacionais mostram que as estratégias aproximadas são competitivas em relação aos resultados existentes na literatura para o escalonamento em ambiente monoprocessado, envolvendo as instâncias propostas por Tanaka~\cite{Tanaka:2012}, que foram baseadas no \textit{benchmark} da \textit{OR-Library} para $40$, $50$, $100$, $150$, $200$ e $300$ tarefas, onde todos os ótimos disponibilizados pelo autor foram obtidos para $40$, $50$ e $100$ tarefas. Essas instâncias foram adaptadas para os experimentos em máquinas paralelas idênticas, onde as datas de término sugeridas das instâncias foram divididas pelo número de máquinas consideradas, sendo $2$, $4$ e $10$ máquinas. Os métodos aproximados atingiram boas soluções, para os ambientes mono e multiprocessado, em um tempo razoável de execução.

@@ -1,0 +1,275 @@
+\appendix
+\renewcommand{\thechapter}{\Alph{chapter}} % Usar letras ao inves de numeros para os capitulos
+\setcounter{chapter}{0} % ressetar a contagem
+
+\chapter{Apresentação da biblioteca UFFLP} \label{apendice-UFFLP}
+
+Existem certos problemas para os quais tem-se uma formulação de programação matemática para o qual, a partir de uma instância do
+problema a ser resolvida, monta-se o modelo a ser resolvido pelo CPLEX. Geralmente, tais problemas costumam ter um número grande de variáveis, o que torna a montagem de instâncias para o otimizador interativo algo exaustivo. Para resolver isso, a ferramenta UFFLP ajuda a construir um modelo matemático particular, a partir de instâncias de teste, resolvê-lo utilizando o CPLEX e visualizar a solução no mesmo ambiente, o que torna o uso da UFFLP bem mais prático~\cite{ArturEduardo:2011}.
+
+A UFFLP consiste em uma biblioteca de funções para integração entre softwares resolvedores de modelos de Programação Inteira Mista (PIM) e linguagens de programação tais como C/C++ e Visual Basic for Applications (VBA). Seu uso se tornou popular principalmente devido ao fato da linguagem VBA estar disponível dentro de Planilhas de Cálculo como o Microsoft Excel, o que facilita o tratamento dos dados utilizados pelos modelos matemáticos e a visualização dos resultados. As funções da UFFLP também podem ser chamadas de programas em C/C++ a partir do Windows ou do Linux. A UFFLP tem ainda as seguintes funcionalidades \cite{ArturEduardo:2011}:
+
+\begin{itemize}
+  \item referência a variáveis e restrições de um modelo matemático apenas pelos seus nomes (\textit{strings});
+  \item possibilidade de integração com heurísticas e rotinas de geração de cortes chamadas  de \textit{callbacks} em VBA ou em C++;
+  \item pode utilizar como resolvedor tanto o \textit{Coin-CBC}, que é gratuito, e o CPLEX, que gratuito apenas para fins acadêmicos;
+  \item código fonte aberto e gratuito.
+\end{itemize}
+
+A UFFLP possui um conjunto de funções básicas que podem ser utilizados na criação do modelo matemático:
+\begin{itemize}
+	\item \textbf{\textit{UFFLP$\_$CreateProblem}:} cria o problema de minimização ou maximização;
+	\item \textbf{\textit{UFFLP$\_$AddVariable}:} insere uma nova variável no problema;
+	\item \textbf{\textit{UFFLP$\_$SetCoefficient}:} insere um coeficiente de uma restrição;
+	\item \textbf{\textit{UFFLP$\_$AddConstraint}:} insere uma restrição no problema;
+	\item \textbf{\textit{UFFLP$\_$Solve}:} resolve o problema;
+	\item \textbf{\textit{UFFLP$\_$GetObjValue}:} retorna o valor da função objetivo do problema;
+	\item \textbf{\textit{UFFLP$\_$GetSolution}:} retorna o valor da variável na solução corrente;
+	\item \textbf{\textit{UFFLP$\_$GetDualSolution}:} retorna o valor da variável dual na solução corrente;
+	\item \textbf{\textit{UFFLP$\_$WriteLP}:} escreve o modelo no formato LP;
+	\item \textbf{\textit{UFFLP$\_$SetLogInfo}:} define o nome do arquivo de \textit{log}, nesse arquivo é gravada a saída do algoritmo;
+	\item \textbf{\textit{UFFLP$\_$DestroyProblem}:} destrói um problema.
+\end{itemize}
+
+A concepção do algoritmo exato considerou o ambiente de máquinas paralelas idênticas, assim como nas heurísticas. A seguir é apresentado um exemplo de modelagem utilizando a biblioteca UFFLP e a formulação apresentada na seção~\ref{Sched-Classic-Form}.
+A construção do algoritmo começa na modelagem da função objetivo e suas restrições, sendo que para cada instância do problema, o tamanho da função objetivo e das restrições será diferente, o que torna necessário construir as equações de forma iterativa. Começando pela função objetivo, primeiramente deve-se começar com a criação do problema (minimização ou maximização):
+
+\begin{lstlisting}
+/* Cria o problema de minimização */
+UFFProblem* prob = UFFLP_CreateProblem( UFFLP_Minimize );
+\end{lstlisting}
+
+Para gerar a função objetivo, da formulação da seção~\ref{Sched-Classic-Form}, considera-se um somatório duplo, logo, são necessários dois laços de repetição para sua construção. Um dos laços percorrerá as $j$ tarefas e o outro os $t,...,T-1$ instantes possíveis, adicionando $f_j(t + p_j) {y^t}_j$ à expressão. Esse processo equivale ao seguinte código:
+
+\begin{lstlisting}
+// procedimento para criação das variáveis binárias com os seus respectivos
+// custos de antecipação e atraso
+std::string varName;
+for (j = 0; j < n; j++)
+{
+   for (t = 0; t <= (T - proctime[j]); t++)
+   {
+      // variável "y_j_t" é 1 se a tarefa "j" é processada no instante "t"
+      std::stringstream s;
+      s << "y_" << j << "_" << t;
+      s >> varName;
+      UFFLP_AddVariable(prob, /* problema de minimização criado */
+                       (char*)varName.c_str(), /* nome da variável criada */
+                        0.0, /* limite inferior da variável */
+                        1.0, /* limite superior da variável */
+                        /* função de define o valor do coeficiente das variáveis */
+                        f(j, t, weight_e, weight_t, duedate, proctime),
+                        UFFLP_Binary ); /* tipo de variável */
+   }
+}
+\end{lstlisting}
+
+
+Para a restrição~\ref{Classic-2}, que a tarefa deve ser processada exatamente uma vez, tem-se 2 laços iguais aos da função objetivo para percorrer a matriz de variáveis, sendo que a soma das variáveis com mesmo índice de tarefas deve ser igual a 1. Existem $n$ equações a serem adicionadas a respeito da primeira restrição. Com isso, tem-se o código mostrado a seguir:
+
+\begin{lstlisting}
+// cria uma restrição onde cada tarefa deve ser executada exatamente em uma máquina
+std::string consName;
+for (j = 0; j < n; j++)
+{
+   // define o nome da restrição "restr1_j"
+   std::stringstream s;
+   s << "restr1_" << j;
+   s >> consName;
+   //  define os coeficientes para a restrição
+   for (t = 0; t < (T - proctime[j]); t++)
+   {
+	 // adiciona a variável "y_j_t" a restrição
+     std::stringstream s;
+     s << "y_" << j << "_" << t;
+     s >> varName;
+     UFFLP_SetCoefficient( prob, /* problema de minimização criado */
+                          (char*)consName.c_str(), /* nome da restrição */
+                          /* nome da variável que receberá o coeficiente */
+                          (char*)varName.c_str(),
+                          1 ); /* valor do coeficiente */
+   }
+   // cria a restrição
+   UFFLP_AddConstraint( prob, /* problema de minimização criado */
+                       (char*)consName.c_str(), /* nome da restrição */
+                        1, /* valor que ficará do lado direito da restrição */
+                        /* tipo de variável (UFFLP_Less, UFFLP_Equal ou UFFLP_Greater) */
+                        UFFLP_Equal );
+}
+\end{lstlisting}
+
+
+Para a restrição~\ref{Classic-3}, que a máquina pode processar no máximo uma tarefa em um dado instante de tempo, é necessário que se tenha três laços de repetição, pois são dois somatórios por equação a respeito da restrição, sendo várias equações (no pior caso, $T$ equações). Assim, para cada instante de tempo $t \in [0, T-1]$ percorrem-se todas as tarefas.  Supondo-se que uma tarefa $j$ é iniciada no instante $t$, se o tempo de término da tarefa não passar do tempo máximo considerado (ou seja, $t+p_{j}$), ela será considerada no somatório mais interno, no qual o valor inicial pode ser $t - p_{j} + 1$ se for maior que $0$, caso contrário é assumido o valor $0$ como valor inicial, e o valor final do somatório mais interno é o instante $t$.  Assim, tem-se o código mostrado no código a seguir:
+
+\begin{lstlisting}
+// cria a restrição que define que a máquina pode processar
+// no máximo uma tarefa em um dado instante de tempo
+for (t = 0; t <= (T - 1); t++)
+{
+   // define o nome da restrição "restr2_j"
+   std::stringstream s;
+   s << "restr2_" << t;
+   s >> consName;
+
+   for (j = 0; j < n; j++)
+   {
+	  //  define os coeficientes para a restrição
+	  if((t + proctime[j]) <= T)
+	  {
+		   if((t - proctime[j] + 1) > 0)
+			  cont = t - proctime[j] + 1;
+		   else cont = 0;
+		
+		   for(; cont <= t; cont++)
+		   {
+				std::stringstream st;
+				st << "y_" << j << "_" << cont;
+				st >> varName;
+				UFFLP_SetCoefficient( prob,
+				                      (char*)consName.c_str(),
+				                      (char*)varName.c_str(),
+				                      1 );
+		   }
+	  }
+   }
+   // cria a restrição
+   UFFLP_AddConstraint( prob, (char*)consName.c_str(), m, UFFLP_Less );
+}
+\end{lstlisting}
+
+Para a restrição~\ref{Classic-5}, que define que as tarefas devem iniciar no instante $0$, evitando tempo ocioso no início do escalonamento. O código para essa restrição é apresentado a seguir:
+
+\begin{lstlisting}
+// cria a restrição que define que as tarefas devem iniciar no instante 0
+   std::stringstream s;
+   s << "restr0";
+   s >> consName;
+
+   for (j = 0; j < n; j++)
+   {
+	  // adiciona a variável "y_j_0" a restrição
+      std::stringstream s1;
+      s1 << "y_" << j << "_0";
+      s1 >> varName;
+      UFFLP_SetCoefficient( prob, (char*)consName.c_str(), (char*)varName.c_str(), 1 );
+
+   }
+   // cria a restrição
+   UFFLP_AddConstraint( prob, (char*)consName.c_str(), m, UFFLP_Equal );
+\end{lstlisting}
+
+Os trechos de código mostrados acima fazem parte da modelagem de um modelo matemático utilizando a ferramenta de programação matemática UFFLP. Para exemplificar a execução deste modelo na prática, considere a instância apresentada na Figura~\ref{fig:ILS+PR} (a) e duas máquinas, onde, a partir desta instância, é gerado o modelo a seguir:
+
+\begin{lstlisting}
+\ENCODING=ISO-8859-1
+\Problem name:
+Minimize
+ obj: 9 y_0_0 + 6 y_0_1 + 3 y_0_2 + 5 y_0_4 + 10 y_0_5 + 15 y_0_6 + 20 y_0_7 + 25 y_0_8 +
+      30 y_0_9 + 35 y_0_10 + 40 y_0_11 + 45 y_0_12 + 50 y_0_13 + 4 y_1_0 + 5 y_1_2 +
+      10 y_1_3 + 15 y_1_4 + 20 y_1_5 + 25 y_1_6 + 30 y_1_7 + 35 y_1_8 + 40 y_1_9 +
+      45 y_1_10 + 50 y_1_11 + 55 y_1_12 + 60 y_1_13 + 65 y_1_14 + 0 y_2_0 + 8 y_2_1 +
+      16 y_2_2 + 24 y_2_3 + 32 y_2_4 + 40 y_2_5 + 48 y_2_6 + 56 y_2_7 + 64 y_2_8 +
+      72 y_2_9 + 80 y_2_10 + 88 y_2_11 + 96 y_2_12 + 8 y_3_0 + 10 y_3_2 + 20 y_3_3 +
+      30 y_3_4 + 40 y_3_5 + 50 y_3_6 + 60 y_3_7 + 70 y_3_8
+Subject To
+ restr1_0:  y_0_0 + y_0_1 + y_0_2 + y_0_3 + y_0_4 + y_0_5 + y_0_6 + y_0_7
+            + y_0_8 + y_0_9 + y_0_10 + y_0_11 + y_0_12  = 1
+ restr1_1:  y_1_0 + y_1_1 + y_1_2 + y_1_3 + y_1_4 + y_1_5 + y_1_6 + y_1_7
+            + y_1_8 + y_1_9 + y_1_10 + y_1_11 + y_1_12 + y_1_13  = 1
+ restr1_2:  y_2_0 + y_2_1 + y_2_2 + y_2_3 + y_2_4 + y_2_5 + y_2_6 + y_2_7
+            + y_2_8 + y_2_9 + y_2_10 + y_2_11  = 1
+ restr1_3:  y_3_0 + y_3_1 + y_3_2 + y_3_3 + y_3_4 + y_3_5 + y_3_6 + y_3_7  = 1
+ restr2_0:  y_0_0 + y_1_0 + y_2_0 + y_3_0 <= 2
+ restr2_1:  y_0_0 + y_0_1 + y_1_0 + y_1_1 + y_2_0 + y_2_1 + y_3_0 + y_3_1 <= 2
+ restr2_2:  y_0_0 + y_0_1 + y_0_2 + y_1_0 + y_1_1 + y_1_2 + y_2_0 + y_2_1
+            + y_2_2 + y_3_0 + y_3_1 + y_3_2 <= 2
+ restr2_3:  y_0_0 + y_0_1 + y_0_2 + y_0_3 + y_1_1 + y_1_2 + y_1_3 + y_2_0
+            + y_2_1 + y_2_2 + y_2_3 + y_3_0 + y_3_1 + y_3_2 + y_3_3 <= 2
+ restr2_4:  y_0_1 + y_0_2 + y_0_3 + y_0_4 + y_1_2 + y_1_3 + y_1_4 + y_2_0
+            + y_2_1 + y_2_2 + y_2_3 + y_2_4 + y_3_0 + y_3_1 + y_3_2 + y_3_3
+            + y_3_4 <= 2
+ restr2_5:  y_0_2 + y_0_3 + y_0_4 + y_0_5 + y_1_3 + y_1_4 + y_1_5 + y_2_1
+            + y_2_2 + y_2_3 + y_2_4 + y_2_5 + y_3_0 + y_3_1 + y_3_2 + y_3_3
+            + y_3_4 + y_3_5 <= 2
+ restr2_6:  y_0_3 + y_0_4 + y_0_5 + y_0_6 + y_1_4 + y_1_5 + y_1_6 + y_2_2
+            + y_2_3 + y_2_4 + y_2_5 + y_2_6 + y_3_0 + y_3_1 + y_3_2 + y_3_3
+            + y_3_4 + y_3_5 + y_3_6 <= 2
+ restr2_7:  y_0_4 + y_0_5 + y_0_6 + y_0_7 + y_1_5 + y_1_6 + y_1_7 + y_2_3
+            + y_2_4 + y_2_5 + y_2_6 + y_2_7 + y_3_0 + y_3_1 + y_3_2 + y_3_3
+            + y_3_4 + y_3_5 + y_3_6 + y_3_7 <= 2
+ restr2_8:  y_0_5 + y_0_6 + y_0_7 + y_0_8 + y_1_6 + y_1_7 + y_1_8 + y_2_4
+            + y_2_5 + y_2_6 + y_2_7 + y_2_8 + y_3_0 + y_3_1 + y_3_2 + y_3_3
+            + y_3_4 + y_3_5 + y_3_6 + y_3_7 + y_3_8 <= 2
+ restr2_9:  y_0_6 + y_0_7 + y_0_8 + y_0_9 + y_1_7 + y_1_8 + y_1_9 + y_2_5
+            + y_2_6 + y_2_7 + y_2_8 + y_2_9 <= 2
+ restr2_10: y_0_7 + y_0_8 + y_0_9 + y_0_10 + y_1_8 + y_1_9 + y_1_10 + y_2_6
+            + y_2_7 + y_2_8 + y_2_9 + y_2_10 <= 2
+ restr2_11: y_0_8 + y_0_9 + y_0_10 + y_0_11 + y_1_9 + y_1_10 + y_1_11 + y_2_7
+            + y_2_8 + y_2_9 + y_2_10 + y_2_11 <= 2
+ restr2_12: y_0_9 + y_0_10 + y_0_11 + y_0_12 + y_1_10 + y_1_11 + y_1_12 + y_2_8
+            + y_2_9 + y_2_10 + y_2_11 + y_2_12 <= 2
+ restr2_13: y_0_10 + y_0_11 + y_0_12 + y_0_13 + y_1_11 + y_1_12 + y_1_13 <= 2
+ restr2_14: y_1_12 + y_1_13 + y_1_14 <= 2
+ restr0:    y_0_0 + y_1_0 + y_2_0 + y_3_0  = 2
+Bounds
+ 0 <= y_0_0 <= 1   0 <= y_0_1 <= 1   0 <= y_0_2 <= 1   0 <= y_0_3 <= 1   0 <= y_0_4 <= 1
+ 0 <= y_0_5 <= 1   0 <= y_0_6 <= 1   0 <= y_0_7 <= 1   0 <= y_0_8 <= 1   0 <= y_0_9 <= 1
+ 0 <= y_0_10 <= 1  0 <= y_0_11 <= 1  0 <= y_0_12 <= 1  0 <= y_0_13 <= 1  0 <= y_1_0 <= 1
+ 0 <= y_1_1 <= 1   0 <= y_1_2 <= 1   0 <= y_1_3 <= 1   0 <= y_1_4 <= 1   0 <= y_1_5 <= 1
+ 0 <= y_1_6 <= 1   0 <= y_1_7 <= 1   0 <= y_1_8 <= 1   0 <= y_1_9 <= 1   0 <= y_1_10 <= 1
+ 0 <= y_1_11 <= 1  0 <= y_1_12 <= 1  0 <= y_1_13 <= 1  0 <= y_1_14 <= 1  0 <= y_2_0 <= 1
+ 0 <= y_2_1 <= 1   0 <= y_2_2 <= 1   0 <= y_2_3 <= 1   0 <= y_2_4 <= 1   0 <= y_2_5 <= 1
+ 0 <= y_2_6 <= 1   0 <= y_2_7 <= 1   0 <= y_2_8 <= 1   0 <= y_2_9 <= 1   0 <= y_2_10 <= 1
+ 0 <= y_2_11 <= 1  0 <= y_2_12 <= 1  0 <= y_3_0 <= 1   0 <= y_3_1 <= 1   0 <= y_3_2 <= 1
+ 0 <= y_3_3 <= 1   0 <= y_3_4 <= 1   0 <= y_3_5 <= 1   0 <= y_3_6 <= 1   0 <= y_3_7 <= 1
+ 0 <= y_3_8 <= 1
+Binaries
+ y_0_0  y_0_1  y_0_2  y_0_3  y_0_4  y_0_5  y_0_6  y_0_7  y_0_8  y_0_9  y_0_10
+ y_0_11  y_0_12  y_0_13  y_1_0  y_1_1  y_1_2  y_1_3  y_1_4  y_1_5  y_1_6
+ y_1_7  y_1_8  y_1_9  y_1_10  y_1_11  y_1_12  y_1_13  y_1_14  y_2_0  y_2_1
+ y_2_2  y_2_3  y_2_4  y_2_5  y_2_6  y_2_7  y_2_8  y_2_9  y_2_10  y_2_11
+ y_2_12  y_3_0  y_3_1  y_3_2  y_3_3  y_3_4  y_3_5  y_3_6  y_3_7  y_3_8
+End
+
+\end{lstlisting}
+
+Dessa forma, a solução ótima para o modelo acima é apresentada na Figura~\ref{fig:OptSolution} (a), que mostra a distribuição das tarefas nas máquinas e o valor das variáveis do modelo matemático, juntamente com o valor de função objetivo para antecipação e atraso ponderados na Figura~\ref{fig:OptSolution} (b).
+
+
+\begin{figure}[ht]
+\centering
+\includegraphics[width=.85\textwidth]{./imagens/OptSolution.eps}
+\caption{Apresentação da solução para $4$ tarefas em $2$ máquinas: (a) representação da solução no gráfico no gráfico de Gantt (b) valor das variáveis no modelo matemático e valor de função objetivo (FO).}
+\label{fig:OptSolution}
+\end{figure}
+
+
+\chapter{Apresentação da ferramenta CPLEX} \label{apendice-CPLEX}
+
+O CPLEX é um conjunto de aplicações e bibliotecas de otimização para resolver problemas de programação linear, quadrática e inteira (mista) desenvolvido pela ILOG (agora parte da IBM). O CPLEX possui uma enorme utilidade para problemas de programação linear~\cite{IBM:2011}.
+
+O CPLEX utiliza o algoritmo \textit{branch-and-cut} para solucionar problemas de programação linear mista. O procedimento de \textit{branch-and-cut} lida com vários nós de uma árvore de busca, onde cada nó representa um subproblema a ser processado, ou seja, a ser checado a sua integralidade e se esse nó pode ou não ser podado. O CPLEX processa os nós da árvore de busca até que não se tenham mais nós ativos disponíveis ou se algum limite foi atingido.
+
+Primeiramente a árvore de \textit{branch-and-cut} é inicializada a fim de que se tenha um nó raiz. O nó raiz da árvore representa o problema original, ignorando todas as restrições de integralidade. Os cortes são aplicados ao nó raiz com a finalidade de reduzir o espaço de busca. Se uma solução inteira for encontrada, ela será factível para o problema original e será considerada a melhor solução atualmente encontrada.
+
+Um ramo (\textit{branch}) é a criação de dois novos de um nó pai. Normalmente, um ramo ocorre quando os limites de uma única variável são modificados, esses novos limites são herdados pelos seus descendentes. Por exemplo, se uma ramo ocorre em uma variável binária, ou seja, variável que possui o limite inferior $0$ (zero) e um limite superior $1$ (um), então o resultado serão dois nós, um nó com o limite superior $0$ (o limite inferior do ramo descendente dessa variável pode assumir somente o valor $0$), e o outro nó com o limite superior modificado $1$ (o limite superior do ramo descendente deve possuir somente o valor $1$). Os dois novos nós da árvore terão assim dois novos domínios distintos. Uma restrição de corte é adicionada ao modelo. 
+
+O objetivo de se adicionar cortes ao modelo matemático é limitar o tamanho do espaço de soluções contínuas (obtidas pela relaxação linear do método - onde é removida a restrição de integralidade do problema), mas sem eliminar soluções inteiras. Onde deseja-se reduzir o número de ramos necessários para solucionar o problema.
+
+Quando processa um nó, o CPLEX começa o seu processamento resolvendo a relaxação contínua do subproblema (problema sem as restrições de integralidade). O CPLEX pode adicionar um ou vários cortes no subproblema até solucioná-lo. Neste processo de adição de cortes, o nó é removido (podado) da árvore quando o subproblema se torna infactível. Caso contrário, o CPLEX verifica se a solução do nó satisfaz as restrições de integralidade, caso essa solução é factível, e se o seu valor de Função Objetivo é melhor que a solução atual incumbente, a solução do nó é utilizada como nova solução incumbente. Senão, a ramificação irá ocorrer, mais primeiramente um método heurístico pode ser utilizado neste nó para verificar se uma nova solução incumbente pode ser inferida a partir deste nó. A ramificação, quando ocorre, é realizada em uma variável onde o valor da solução viola as restrições de integralidade. Esta prática resulta em dois nós que são adicionados na árvore para que seja processadas posteriormente.
+
+As figuras~\ref{fig:b&c_cplex_1maq} e \ref{fig:b&c_cplex_4maq} mostram a saída do algoritmo exato para a instância de número $21$ de $40$ tarefas em 1 máquina e 4 máquinas, respectivamente, onde é possível observar que no processamento para o ambiente de $1$ máquina são necessárias mais ramificações na árvore de \textit{branch-and-cut} para se atingir a solução ótima, por outro lado, no processamento para o ambiente de máquinas paralelas, o \textit{branch-and-cut} do CPLEX apresenta menos ramificações na árvore para atingir a solução ótima do problema.
+
+\begin{figure}[t]
+\centering
+   \includegraphics[width=0.7\textwidth]{./imagens/saida-cplex-1m.eps}
+   \caption{Saída do CPLEX para $40$ tarefas em ambiente monoprocessado.}
+   \label{fig:b&c_cplex_1maq}
+\end{figure}
+
+\begin{figure}[t]
+\centering
+   \includegraphics[width=0.7\textwidth]{./imagens/saida-cplex-4m.eps}
+   \caption{Saída do CPLEX para $40$ tarefas em $4$ máquinas.}
+   \label{fig:b&c_cplex_4maq}
+\end{figure}

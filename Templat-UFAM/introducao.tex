@@ -1,0 +1,56 @@
+\chapter{Introdução} \label{chap:Intro}
+
+
+Os problemas de escalonamento em geral vêm sendo estudados desde a década de 1950~\cite{rodrigues:2009},~\cite{brucker:2006}, quando o ferramental matemático pôde ser usado para modelar problemas reais complexos com o auxílio do computador e questões econômicas motivaram cada vez mais o seu estudo em diversas áreas do conhecimento. Por isso, existe na literatura um vasto material sobre o assunto com inúmeras classes de complexidade com diferentes características, condições de execução, restrições e ambientes de processamento. Apesar do grande interesse de diversas áreas na investigação destes problemas, ainda existem muitos problemas em aberto, com pequenas diferenças em relação aos problemas já bem resolvidos ou já provados serem NP-Difíceis. Além disso, constantemente surgem novos problemas, conceitos, formas de modelagem, técnicas de resolução e aplicação, o que enriquece ainda mais a literatura e desperta cada vez mais o interesse em buscar novas e melhores soluções algorítmicas e novos modelos matemáticos cada vez mais eficientes para os problemas de escalonamento do mundo real~\cite{rodrigues:2009}.
+
+Dentre os problemas de escalonamento existentes, os que consideram datas de término na execução de tarefas vêm sendo estudados desde a década de 1970 e constituem uma das principais vertentes de pesquisa sobre a classe geral de problemas de escalonamento~\cite{Eilon:1977},~\cite{Gordon:1999},~\cite{Sourd:2008},~\cite{jozefowska2007just},~\cite{pinedo:2012},~\cite{Tanaka:2012}, tanto pela grande representatividade de situações reais, quanto pela maior complexidade teórica envolvida. Especialmente, o estudo de problemas de escalonamento que consideram simultaneamente penalidades de antecipação e atraso na execução de tarefas foi motivado pela adoção nas indústrias de processos produtivos com o conceito de produção sem folga (nem antes nem depois da data de término estipulada).
+
+Esta ideia de produção sem folga ficou conhecida como \textit{Just-in-Time} (JIT), tal termo surgiu no Japão na década de 70, na indústria automotiva, onde se buscava um sistema em que fosse possível coordenar uma determinada produção com a sua demanda específica e com o menor tempo de atraso possível. Este sistema tem como objetivo a melhoria do processo produtivo e fluxo de manufatura, eliminação de estoques e desperdícios. A aplicação deste sistema é muito ampla, envolvendo a produção de produtos perecíveis por exemplo, mas abrangendo qualquer sistema em que as tarefas devem ser finalizadas o mais próximo possível da data de término estipulada~\cite{leung:2004}.
+
+Muitas vezes é bastante difícil atingir esses requisitos de produção, logo, a redução de custos de estoque e atraso na produção acabam se tornando grandes desafios. Se a demanda dos consumidores é conhecida no início do planejamento, é natural definir as datas de término dos produtos obedecendo a demanda de cada consumidor. Assim, a partir do cronograma principal de produção, onde as datas de término sugeridas dos consumidores estão definidas, as informações das demandas são propagadas para os níveis restantes de produção. O objetivo é estipular as datas de término de cada etapa de produção e controle de matérias-primas, procurando assim atender ao cronograma principal de produção \cite{jozefowska2007just}.
+
+Naturalmente, completar uma produção após a data de entrega não é algo desejável. No caso de produtos finalizados, o atraso não lida apenas com a insatisfação do cliente mas também pode resultar na perda de clientes. Em geral, os custos incorridos pela conclusão tardia de um pedido incluem penalizações devido a quebra de cláusulas contratuais, custos de expedição de tarefas que estão com atraso e custos de atualização do cronograma de produção \cite{jozefowska2007just}.
+
+Por outro lado, quando uma produção é concluída antes da data de entrega, essa produção deve ser armazenada, o que pode gerar custos indesejáveis de estoque. Os custos de inventário dependem da quantidade de inventário, o valor do item e o tempo em que o inventário é realizado. Os custos de estoque incluem o custo de capital comprometido com o inventário, o custo dos seguros contratados em estoques, custo de obsolência ou limitações de vida útil do produto e os custos operacionais envolvidos no armazenamento do inventário. O custo de capital é geralmente expresso como uma taxa de juros com base no custo de obtenção de empréstimos bancários para financiar o investimento em estoque. Os custos operacionais incluem o custo do aluguel de espaço de armazenamento público, ou o custo de possuir e operar instalações de armazenamento (tais como aquecimento, luz e trabalho) \cite{jozefowska2007just}.
+
+O objetivo deste trabalho consiste em elaborar formulações matemáticas e desenvolver estratégias algorítmicas para problemas de escalonamento de tarefas com penalidades de antecipação e atraso. Os objetivos específicos são: 
+\begin{itemize}
+
+\item Adquirir um conhecimento aprofundado na área de otimização combinatória em geral, com ênfase em teoria de escalonamento, programação matemática e métodos aproximados.
+
+\item Analisar formulações matemáticas para problemas clássicos de escalonamento com penalidades de antecipação e atraso.
+
+\item Desenvolver algoritmos exatos e aproximados para tal problema.
+
+\item Realizar experimentos computacionais envolvendo instâncias de testes disponíveis na literatura e comparar os resultados com trabalhos relacionados.
+
+\item Registrar e divulgar os resultados da pesquisa em artigos e conferências de relevância.
+
+\end{itemize}
+
+
+Este trabalho justifica-se pela oportunidade de lidar com problemas de escalonamento de tarefas envolvendo a minimização das penalidades de antecipação e atraso através de um enfoque teórico-computacional. Sendo que, muitos problemas reais podem ser modelados como problemas de escalonamento e a literatura oferece várias ferramentas e técnicas de resolução para tais problemas.
+
+Nas organizações em geral, é importante que estratégias de alocação de recursos sejam bem definidas, como postos e máquinas da linha de produção de uma fábrica, organização do quadro de funcionários de uma empresa, fluxo de matérias-primas, de modo a minimizar os encargos de atraso ou antecipação nas atividades a fim de minimizar custos em geral e maximizar o lucro e a satisfação dos clientes.
+
+A classe de problemas de escalonamento contém problemas em diversas classes de complexidade. Dentre elas, estão os problemas 
+de escalonamento que estão na classe P, NP-Difícil e os problemas que estão em aberto. Tem-se então uma rica área de pesquisa em Otimização Combinatória e Complexidade Computacional, que além de possuir aplicações práticas diversas, possui uma enorme importância teórica, o que desperta o interesse em buscar algoritmos e formulações matemáticos mais eficientes para estes problemas.
+
+
+Com relação a organização, esta dissertação encontra-se dividida em 06 (seis) capítulos, que são:
+
+\begin{itemize}
+
+\item Neste capítulo é apresentada a introdução desta dissertação, juntamente com o objetivo geral e específicos, justificativa e organização da dissertação.
+
+\item No Capítulo~\ref{chap-FT} é apresentado o referencial teórico necessário para o entendimento da pesquisa realizada, onde é introduzida a área de otimização combinatória juntamente com algumas abordagens de resolução, bem como as definições e notações amplamente utilizadas nos problemas clássicos de escalonamento.
+
+\item No Capítulo~\ref{chap-ProbEscalET}, os problemas de escalonamento de tarefas com penalidades de antecipação e atraso são apresentados, bem como os trabalhos correlatos e as suas estratégias de resolução. 
+
+\item No Capítulo~\ref{chap-MetProp}, os métodos propostos neste trabalho são detalhados, envolvendo abordagens exatas e aproximadas.
+
+\item No Capítulo~\ref{chap-ResComp}, os resultados computacionais e uma análise empírica realizada podem ser consultados.
+
+\item No Capítulo~\ref{chap-Concl}, são expostas as conclusões do trabalho e diretivas para trabalhos futuros.
+
+\end{itemize}
