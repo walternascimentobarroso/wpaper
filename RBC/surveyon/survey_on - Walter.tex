@@ -16,11 +16,10 @@
 \newcommand\MYhyperrefoptions{bookmarks=true,bookmarksnumbered=true,
 pdfpagemode={UseOutlines},plainpages=false,pdfpagelabels=true,
 colorlinks=true,linkcolor={black},citecolor={black},urlcolor={black},
-pdftitle={Bare Demo of IEEEtran.cls for Computer Society Journals},%<!CHANGE!
+pdftitle={Auxílio de deficientes visuais em plataforma de ensino online usando tecnicas de inteligencia artificial},%<!CHANGE!
 pdfsubject={Typesetting},%<!CHANGE!
-pdfauthor={Michael D. Shell},%<!CHANGE!
-pdfkeywords={Computer Society, IEEEtran, journal, LaTeX, paper,
-             template}}%<^!CHANGE!
+pdfauthor={Walter N. Barroso},%<!CHANGE!
+pdfkeywords={Educação a distância, Deficientes visuais, Ensino online, Inteligência artificial, Raciocínio baseado em casos}}%<^!CHANGE!
 
 \hyphenation{op-tical net-works semi-conduc-tor}
 
@@ -38,7 +37,7 @@ pdfkeywords={Computer Society, IEEEtran, journal, LaTeX, paper,
 }
 
 \markboth{PROGRAMA DE PÓS-GRADUAÇÃO EM INFORMÁTICA - PPGI (UFAM), Janeiro~de~2017}%
-{Shell \MakeLowercase{\textit{et al.}}: Bare Advanced Demo of IEEEtran.cls for IEEE Computer Society Journals}
+{Shell \MakeLowercase{\textit{et al.}}: Auxílio de deficientes visuais em plataforma de ensino online usando tecnicas de inteligencia artificial}
 
 \IEEEtitleabstractindextext{%
 \begin{abstract}
@@ -92,18 +91,15 @@ de notas de aula, listas de exercícios e trabalhos na Internet, as vantagens de
 de ensino-aprendizagem, seja ele presencial ou à distância.
 
 \subsection{Moodle}
-\IEEEPARstart{M}{oodle} (Modular Object Oriented Dynamic Learning Environment) é um Ambiente Virtual de Ensino e Aprendizagem (AVEA), 
-Na educação a distância foi onde o Moodle se tornou muito popular, sua função básica está descrita no manual como 
-“um software desenhado para auxiliar educadores a organizar e gerenciar com facilidade cursos online”. 
+\IEEEPARstart{M}{oodle} (Modular Object Oriented Dynamic Learning Environment) é um Ambiente Virtual de Ensino e Aprendizagem (AVEA), Na educação a distância foi onde o Moodle se tornou muito popular, sua função básica está descrita no manual como “um software desenhado para auxiliar educadores a organizar e gerenciar com facilidade cursos online”. 
 
-O Moodle é um software livre, sua principal função é a de ser um sistema de administração voltado à educação, especialmente dirigido 
-à criação de fórum em ambientes direcionados à aprendizagem.
+O Moodle é um software livre, sua principal função é a de ser um sistema de administração voltado à educação, especialmente dirigido à criação de fórum em ambientes direcionados à aprendizagem.
 
-Fialho (2014) afirma que várias universidades, fazem uso do Moodle. A utilização de tais ambientes é fundamental ao processo de ensino e 
+Fazem uso do Moodle. A utilização de tais ambientes é fundamental ao processo de ensino e 
 aprendizagem dos discentes, mas sabe-se que esse espaço virtual ainda apresenta barreiras no acesso aos conteúdos e 
 outras informações, principalmente para o aluno com deficiência. A organização da informação no ambiente virtual, como 
 ela chega até o acadêmico e o conteúdo são alguns exemplos de que, além da estrutura do Moodle, a ação docente 
-também é imprescindível neste processo (FIALHO, 2014).
+também é imprescindível neste processo \cite{FIALHO}.
 
 Dentre os principais benefícios do uso do Moodle, podem-se destacar:
 \begin{itemize}
@@ -117,7 +113,7 @@ Dentre os principais benefícios do uso do Moodle, podem-se destacar:
 \IEEEPARstart{D}{iversos} trabalhos vêm sendo realizados, em diferentes linhas de pesquisa, com o objetivo de auxiliar pessoas cegas a 
 navegar na Web. Alguns destes trabalhos procuram identificar o impacto das diretrizes de acessibilidade propostas pelo 
 W3C no desenvolvimento de sites acessíveis, assim como a eficácia dessas diretrizes frente aos problemas encontrados 
-pelos usuários cegos (\cite{4ce5a8d646ac449e98d079b8f6c3a7c5}; HAMILTON; KING, 2004) (\cite{Power2012}).
+pelos usuários cegos \cite{4ce5a8d646ac449e98d079b8f6c3a7c5} \cite{Power2012}.
 
 Outras pesquisas têm como objetivo identificar o comportamento dos usuários cegos ao navegar na Web. 
 \cite{Vigo2013} analisaram como os usuários cegos se comportam frente a diversas situações problemáticas 
@@ -127,8 +123,8 @@ pessoas cegas ao interagir com conteúdos visuais em redes sociais.
 
 Diversos trabalhos abordam questões específicas para a acessibilidade na Web, como por exemplo, 
 a acessibilidade de vídeos online com base em anotações de vídeo e enriquecimento de áudio composto por 
-síntese de voz e ícones sonoros (earcons) \cite{Encelle2011} e a exploração de dados georreferenciados 
-por meio de coordenadas de mapas, sons não textuais e saída de voz (\cite{Zhao2008}).
+síntese de voz e ícones sonoros \cite{Encelle2011} e a exploração de dados georreferenciados 
+por meio de coordenadas de mapas, sons não textuais e saída de voz \cite{Zhao2008}.
 
 Por fim, algumas pesquisas adotam o conceito de que as interfaces projetadas para usuários com 
 visão podem não se adequar de maneira satisfatória aos usuários cegos, mesmo que em conformidade 
@@ -152,7 +148,7 @@ de pessoas cegas na Web é proposta por \cite{Steiner2015}. Esta solução é ba
 algoritmo que analisa o conteúdo HTML das páginas Web, compara os elementos da página com os elementos das 
 páginas visitadas anteriormente e com os elementos de um banco de dados compartilhado, com objetivo 
 de filtrar informações que não são necessárias aos usuários do leitor de tela. 
-AL-MOUH et al. (2016) apresentaram um serviço de proxy que adapta as páginas Web e as apresenta de uma 
+\cite{Authors2016} apresentaram um serviço de proxy que adapta as páginas Web e as apresenta de uma 
 forma usável aos usuários com deficiência visual. O proxy VIPaware apresenta um serviço que recupera as 
 principais informações a partir de qualquer página da Web, analisa o HTML da página solicitada e cria 
 um DOM (Document Object Model), que é tratado para eliminar elementos inacessíveis.
@@ -161,7 +157,7 @@ A W3C, por meio da WAI (Web Accessibility Initiative), trabalha em diversos padr
 e recomendações que têm por objetivo melhorar a acessibilidade de sites. No entanto,
 por focar seus esforços em conformidade com suas recomendações, o W3C promove uma
 visão mais técnica e mensurável da acessibilidade. Porém, nem sempre ao atingir um
-bom nı́vel de acessibilidade segundo esses padrões, um site ou aplicação possui uma boa
+bom nível de acessibilidade segundo esses padrões, um site ou aplicação possui uma boa
 usabilidade \cite{Petrie2007}.
 
 \section{Técnicas de inteligência artificial}
@@ -177,7 +173,7 @@ com alguma ênfase no uso de agentes em Ambientes Virtuais de Aprendizagem (AVA)
 Como exemplos recentes de aplicações na área de AVA destacam-se os trabalhos \cite{Arias}  e \cite{Campana2008} que 
 apresentam propostas arquiteturas multiagente para AVA. No contexto da aplicação da tecnologia de agentes para OA, 
 se destaca a proposta dos objetos de aprendizagem inteligentes 
-(ILO-Intelligent Learning Objects)(\cite{Gomes2004}; \cite{Bavaresco2009}).
+(ILO-Intelligent Learning Objects) \cite{Gomes2004} \cite{Bavaresco2009}.
 
 A Web Semântica busca descrever o conteúdo dos recursos da Web atual, com o objetivo de dar suporte, 
 tanto para agentes humanos quanto para agentes artificiais, no processamento de informações. 
@@ -189,17 +185,16 @@ A Web Semântica, oferece diversas melhorias no contexto de Sistemas Educacionai
 contribuindo para o aumento da qualidade da aprendizagem, criando assim os Ambientes Educacionais 
 Baseados na Web Semântica.
 
-A aplicação de tecnologias relacionadas a Web Semântica no projeto de ambientes e sistemas educacionais
-é um fenômeno atual (\cite{Isotani}, \cite{Proceedings2007}). Apesar disso, a tecnologia de engenharia de ontologias, 
+A aplicação de tecnologias relacionadas a Web Semântica no projeto de ambientes e sistemas educacionais é um fenômeno atual \cite{Isotani} \cite{Proceedings2007}. Apesar disso, a tecnologia de engenharia de ontologias, 
 tem se mostrado útil na concepção de vários tipos de ambientes educacionais, incluindo, entre outros, autoria 
-de conteúdos (\cite{Isotani}, \cite{Isotani2008}), ambientes web (\cite{Silva2009}, \cite{Bittencourt2009}) e 
-modelos educacionais formais (Hayashi, et al. 2009). Nesse contexto, ontologias são tipicamente empregadas para 
+de conteúdos \cite{Isotani} \cite{Isotani2008}, ambientes web \cite{Silva2009} \cite{Bittencourt2009} e 
+modelos educacionais formais \cite{Hayashi2009}. Nesse contexto, ontologias são tipicamente empregadas para 
 definir as propriedades dos elementos e entidades relativas ao sistema educacional. Há uma tendência a seguir 
-a estruturação dos ITS e dividir as ontologias educacionais em três tipos (\cite{Silva2009}): a) ontologias 
+a estruturação dos ITS e dividir as ontologias educacionais em três tipos \cite{Silva2009}: a) ontologias 
 para o domínio de ensino, b) ontologias sobre métodos pedagógicas, e c) ontologias a respeito do modelo de aluno. 
 Alternativamente, existem propostas bastante detalhadas de ontologias que integram aspectos dos três tipos citados acima, 
 sendo capazes, por exemplo de modelar as várias propriedades de um processo de aprendizagem em diversos níveis de 
-granularidade (\cite{Proceedings2007}) ou descrever processos de aprendizagem colaborativa (\cite{Hayashi2009}).
+granularidade \cite{Proceedings2007} ou descrever processos de aprendizagem colaborativa \cite{Hayashi2009}.
 
 \section{Conclusão}
 \IEEEPARstart{T}{odos} os trabalhos abordam formas e ferramentas diferentes para a inclusão do deficiente visual no mundo da educação. 
@@ -211,21 +206,11 @@ os recursos.
 Mesmo quando existe uma ferramenta que auxilie a usar a ferramenta de ambiente virtual, como exemplo, um leitor de 
 tela ou uma ferramenta de áudio, a parte da educação, muitas vezes, é deixada de lado.
 
-
-
-
-
-
 \ifCLASSOPTIONcaptionsoff
   \newpage
 \fi
 
 
-
 \bibliographystyle{IEEEtran}
-%\bibliographystyle{apalike}
-%\bibliography{IEEEabrv,bib/referencias}
-\bibliography{IEEEabrv,referencias}
+\bibliography{references}
 \end{document}
-
-
