@@ -1,0 +1,100 @@
+\documentclass[mscexam,pdftex]{ppgi-ufam}
+\usepackage[brazil]{babel}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\let\newfloat=\undefined
+\usepackage{enumerate}
+\usepackage{amsmath}
+\usepackage{amsthm}
+\usepackage{amssymb}
+\usepackage{array}
+\usepackage{longtable}
+\usepackage{caption}
+\usepackage{listings}
+\usepackage{pslatex}
+\usepackage{setspace}
+\usepackage[all]{hypcap}
+\usepackage[nottoc]{tocbibind}
+\usepackage[square,sort,nonamebreak,comma]{natbib}
+\usepackage{epstopdf}
+\usepackage{scalefnt}
+
+\newcommand{\tab}{\hspace*{0.5em}}
+\usepackage{float}
+\usepackage{comment}
+\usepackage{booktabs}
+\usepackage{lscape}
+\addto{\captionsbrazil}{
+    \renewcommand{\bibname}{Refer\^{e}ncias}
+}
+
+\makelosymbols
+\makeloabbreviations
+\hypersetup{hidelinks}
+\usepackage{lettrine} 
+
+\begin{document}
+
+\title{Tutor inteligente com raciocínio baseado em casos para deficientes visuais na plataforma moodle}
+\foreigntitle{Intelligent tutor with case-based reasoning for the visually impaired on the moodle platform}
+\author{Walter Nascimento}{Barroso}
+\advisor{Profa.}{Elaine Harada Teixeira de}{Oliveira}{D.Sc.}{Instituto de Computação}{Universidade Federal do Amazonas}
+\examiner{Prof.}{xxx}{D.Sc.}{Instituto de Computação}{Universidade Federal do Amazonas}
+\examiner{Profa.}{xxx}{D.Sc.}{Instituto de Computação}{Universidade Federal do Amazonas}
+\examiner{Prof.}{xxx}{D.Sc.}{Instituto de Computação}{Universidade Federal do Amazonas}
+\examiner{Prof.}{xxx}{D.Sc.}{Instituto de Computação}{Universidade Federal do Amazonas}
+\department{IComp}
+\date{03}{2017}
+
+\keyword{Raciocínio baseado em casos}
+\keyword{Educação}
+\keyword{E-learning}
+\keyword{Educação a distância}
+\keyword{Deficientes visuais}
+\keyword{Ensino online}
+\keyword{Inteligência artificial}
+
+\maketitle
+
+
+\dedication{A Deus, \\ aos professores, \\ aos colegas de curso e \\ aos meus familiares.}
+
+\chapter*{Agradecimentos}
+Agradeço a Deus.
+
+
+\begin{abstract}
+Esta pesquisa investiga ... .
+\linebreak
+\linebreak
+\textbf{Palavras-chave:} Raciocínio baseado em casos, Educação, E-learning, Educação a distância, Deficientes visuais, Ensino online, Inteligência artificial.
+\end{abstract}
+
+\begin{foreignabstract}
+This research investigates ... .
+\linebreak
+\linebreak
+\textbf{Keywords:} Case-based Reasoning, Education, E-learning, Distance Education, Visually impaired, Online Teaching, Artificial Intelligence.
+\end{foreignabstract}
+
+\setcounter{tocdepth}{1}
+
+\tableofcontents
+\listoffigures
+\listoftables
+    
+\mainmatter
+
+\include{chapter/introducao}
+\include{chapter/fundamentacao}
+\include{chapter/relacionado}
+\include{chapter/proposta}
+\include{chapter/abordagem}
+\include{chapter/resultados}
+\include{chapter/conclusao}
+
+\bibliographystyle{alpha-ime}
+\label{bib:begin}
+\bibliography{references}
+\label{bib:end}
+\end{document}

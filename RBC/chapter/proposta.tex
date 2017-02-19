@@ -1,0 +1,56 @@
+\chapter{Proposta} \label{chap:Proposta}
+\lettrine{O} uso de tecnologias na educação está cada vez maior no mundo todo, principalmente por influência da internet, é fácil conectar computadores e até mesmo de dispositivos móveis como celulares para conseguir qualquer conteúdo educativo ou informação importante. Contudo, algumas pessoas ainda encontra dificuldade na utilização destas tecnologias, do qual se destaca pessoas com necessidades visuais.
+
+\section{Proposta}
+\lettrine{A} Proposta consiste em criar um tutor que auxilie no uso da plataforma para deficientes visuais.
+
+Para a inserção do tutor será criada uma interface totalmente voltada para deficientes visuais com os recursos de reconhecimento de voz, leitor de texto, entre outros. Dentre os diversos LMS(Learning Management Systems) existentes, foi selecionado o Moodle, por ser um dos mais utilizados segundo Coelho(2011) \citep{coelho2011acessibilidade}.
+
+
+\section{Trabalhos Relacionados}
+\lettrine{U}{m} trabalho que inspirou a criação de uma interface totalmente voltada para deficientes visuais e usando a base do Moodle como referência foi o trabalho do André Luiz Andrade \citep{rezende2005abaco}. O trabalho do Kraus, Helton e Anita \citep{kraus2007desenvolvimento} trouxeram a ideia da criação de um chatterbot com a técnica de RBC. O trabalho do Azeta, Ayo, Atayero and Ikhu-Omoregbe \citep{azeta2009case} trouxe a ideia de juntar a técnica de RBC para auxiliar deficientes visuais.
+
+\section{Descrição da proposta}
+\subsection{Interface}
+\lettrine{P}{essoas} que não possuem necessidades visuais podem utilizar a plataforma padrão normalmente, apenas pessoas com necessidades especiais utilizarão a nova interface, assim não interferindo no uso e interação daqueles já habituados com o sistema anterior como exemplificado na imagem abaixo.
+
+\begin{figure}[htbp!]
+\centering
+\includegraphics[scale=0.7]{img/uso.png}
+\caption{Exemplo do uso da interface}
+\label{fig:uso}
+\end{figure}
+
+A interface irá acessar os dados da base do Moodle, assim para os professores e alunos que não possuem deficiência visual não haverá diferença, excluindo a necessidade de uma nova aprendizagem para todos os envolvidos.
+
+\subsection{Tutor}
+\lettrine{N}{a} utilização do sistema, o tutor irá fazer todo o trabalho de auxílio para o deficiente visual, suas tarefas principais se resumem em auxiliar no uso da plataforma e ajustar o conteúdo para o usuário.
+
+\begin{figure}[htbp!]
+\centering
+\includegraphics[scale=0.6]{img/tutor.png}
+\caption{Trabalho do Tutor}
+\label{fig:tutor}
+\end{figure}
+
+\subsection{Ações do Tutor}
+\lettrine{O} tutor está dividido em dois agentes, o primeiro é um chatterbot que resolver as questões de uso da plataforma utilizando a técnica de raciocínio baseado em casos(RBC), o segundo agente está integrado a plataforma e conforme o usuário utiliza, novos conteúdos são sugeridos também baseado na técnica de RBC.
+
+\begin{figure}[htbp!]
+\centering
+\includegraphics[scale=0.6]{img/Agente.png}
+\caption{Ações do Tutor}
+\label{fig:agente}
+\end{figure}
+
+\subsection{Raciocínio Baseado em Casos(RBC)}
+\lettrine{A} ideia principal do RBC é resolver cada novo problema lembrando das soluções de situações anteriores similares. A definição clássica de um sistema RBC foi elaborada por Reisbeck e Schank (1989) \citep{Riesbeck}: “Um sistema RBC resolve problemas, adaptando soluções que foram utilizadas para resolver problemas anteriores”.
+
+Um exemplo seria, uma pessoa escolhe comprar um objeto, e com base nas experiências passadas decide qual será o melhor para não passar por problemas já vividos com outros objetos.
+
+\begin{figure}[htbp!]
+\centering
+\includegraphics[scale=0.6]{img/RBC.png}
+\caption{Ações do Tutor}
+\label{fig:Ciclo RBC}
+\end{figure}
