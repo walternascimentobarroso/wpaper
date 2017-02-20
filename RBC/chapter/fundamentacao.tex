@@ -6,17 +6,15 @@ Desta forma, são apresentados os conceitos sobre raciocínio baseado em casos, 
 \section{Raciocínio Baseado em Casos}
 \lettrine{A} idéia principal do RBC é resolver cada novo problema lembrando das soluções de situações anteriores similares.
 
-A definição clássica de um sistema RBC foi elaborada por Reisbeck e Schank (1989): “Um
-sistema RBC resolve problemas, adaptando soluções que foram utilizadas para resolver
-problemas anteriores”.
+A definição clássica de um sistema RBC foi elaborada por Reisbeck e Schank \cite{Riesbeck}: “Um sistema RBC resolve problemas, adaptando soluções que foram utilizadas para resolver problemas anteriores”.
 
 Um exemplo seria, uma pessoa escolhe comprar um objeto, e com base nas experiências
 passadas decide qual será o melhor para não passar por problemas já vividos com outros
 objetos.
 
-Wangenheim et al (2013) afirmam que dá-se o nome de Raciocínio Baseado em Casos (RBC), à técnica de Inteligência Artificial, como um conjunto de atividades que auxilia na resolução de problemas, propondo soluções incontestavelmente utilizadas e documentadas, ao recuperar e adaptar experiências passadas – chamadas casos – armazenadas em uma Base de Casos. Um novo caso é resolvido com base na adaptação de solução de casos similares já conhecidos (Wangenheim et al 2013).
+\cite{WANGENHEIM2013} Afirmam que dá-se o nome de Raciocínio Baseado em Casos (RBC), à técnica de Inteligência Artificial, como um conjunto de atividades que auxilia na resolução de problemas, propondo soluções incontestavelmente utilizadas e documentadas, ao recuperar e adaptar experiências passadas – chamadas casos – armazenadas em uma Base de Casos. Um novo caso é resolvido com base na adaptação de solução de casos similares já conhecidos \cite{WANGENHEIM2013}.
 
-O ciclo de funcionamento de um sistema de RBC é composto por quatro etapas de execução, conhecida como 4R, conforme definido por Aamodt `I\&'  Plaza (1994), explicado abaixo e ilustrado pela Figura 1.
+O ciclo de funcionamento de um sistema de RBC é composto por quatro etapas de execução, conhecida como 4R, conforme definido por \cite{aamodt1994case}, explicado abaixo e ilustrado pela Figura 1.
 \begin{itemize}
     \item Recuperação: a partir da apresentação ao sistema de um novo problema é feita a recuperação na base de casos daquele mais parecido com o problema em questão. Isto é feito a partir da identificação das características mais significantes em comum entre os casos;
     \item Reuso: a partir do caso recuperado é feita a reutilização da solução associada àquele caso. Geralmente a solução do caso recuperado é transferida ao novo problema diretamente como sua solução;
@@ -31,7 +29,7 @@ O ciclo de funcionamento de um sistema de RBC é composto por quatro etapas de e
 \label{fig:cicloRBC}
 \end{figure}
 
-Conforme Wangenheim (2003), as etapas mais importantes do processo de
+Conforme Wangenheim \cite{WANGENHEIM2003}, as etapas mais importantes do processo de
 desenvolvimento de um sistema RBC são:
 \begin{itemize}
     \item Aquisição de Conhecimento;
@@ -42,32 +40,29 @@ desenvolvimento de um sistema RBC são:
 \end{itemize}
 
 \subsection{A Aquisição de Conhecimento}
-\lettrine{A}{quisição} de conhecimento é uma etapa muito importante no desenvolvimento do sistema de RBC. Conforme Kolodner (1993) ela é considerada o componente crítico no desenvolvimento de sistemas de RBC. Consiste na seleção de casos que irão formar uma base de informações (um sistema de banco de dados – uma base de casos) que contenha implicitamente o conhecimento necessário na solução de problemas;
+\lettrine{A}{quisição} de conhecimento é uma etapa muito importante no desenvolvimento do sistema de RBC. Conforme Kolodner \cite{Kolodner1993} ela é considerada o componente crítico no desenvolvimento de sistemas de RBC. Consiste na seleção de casos que irão formar uma base de informações (um sistema de banco de dados – uma base de casos) que contenha implicitamente o conhecimento necessário na solução de problemas;
 
 \subsection{Representação de caso}
-\lettrine{U}{m} caso é definido pela representação do conhecimento contido em uma experiência vivida que dirige o indivíduo a alcançar seus objetivos (Leake, 1996). Todo caso é composto por: Problema: descreve o estado do mundo real onde o caso ocorre; e, Solução: contém o estado das soluções derivadas para o problema (Watson, 1997).Pode-se armazenar os casos utilizando os diferentes tipos usados pelos computadores, arquivos, banco de dados, etc.
+\lettrine{U}{m} caso é definido pela representação do conhecimento contido em uma experiência vivida que dirige o indivíduo a alcançar seus objetivos \cite{leakecase}. Todo caso é composto por: Problema: descreve o estado do mundo real onde o caso ocorre; e, Solução: contém o estado das soluções derivadas para o problema \cite{watson1998applying}. Pode-se armazenar os casos utilizando os diferentes tipos usados pelos computadores, arquivos, banco de dados, etc.
 
 \subsection{Indexação}
-\lettrine{I}{ndexação} é um processo importante e decisivo dentro do RBC, assim como numa base de dados convencional, porém não necessariamente, todas as informações relevantes deverão ser indexadas. As informações indexadas servirão para acelerar o processo de recuperação enquanto que informações não-indexadas podem servir de contextualização para a decisão de reutilização do caso ou em outros aspectos do sistema de informação e não somente na recuperação. [VITORINO 2009] Uma das tarefas da indexação é atribuir pesos às características dos casos, para que possa alcançar a recuperação de casos utilizando o algoritmo de vizinhança (Nearest Neighbor, Michie 1994). Com esta técnica define peso as características mais importantes.
+\lettrine{I}{ndexação} é um processo importante e decisivo dentro do RBC, assim como numa base de dados convencional, porém não necessariamente, todas as informações relevantes deverão ser indexadas. As informações indexadas servirão para acelerar o processo de recuperação enquanto que informações não-indexadas podem servir de contextualização para a decisão de reutilização do caso ou em outros aspectos do sistema de informação e não somente na recuperação. \cite{vitorino2009raciocinio} Uma das tarefas da indexação é atribuir pesos às características dos casos, para que possa alcançar a recuperação de casos utilizando o algoritmo de vizinhança. Com esta técnica define peso as características mais importantes.
 
 \subsection{Recuperação de Casos}
-\lettrine{O} processo de recuperação de casos (Riesbeck, 1999) inicia com uma descrição de problema e finaliza quando um melhor caso for encontrado. O sistema procura na base de casos, o caso mais similar com o novo problema.
+\lettrine{O} processo de recuperação de casos \cite{Riesbeck} inicia com uma descrição de problema e finaliza quando um melhor caso for encontrado. O sistema procura na base de casos, o caso mais similar com o novo problema.
 
-Leake (1996) coloca que uma característica importante dos sistemas de RBC é possuir alternativas para identificar os casos a fim de conseguir representá-los e indexá-los, garantindo que sejam recuperados os mais úteis para resolver o problema do usuário. Somente consegue-se alternativas para identificar os casos através de procedimentos de comparação e medição de similaridades.
+\cite{leakecase} coloca que uma característica importante dos sistemas de RBC é possuir alternativas para identificar os casos a fim de conseguir representá-los e indexá-los, garantindo que sejam recuperados os mais úteis para resolver o problema do usuário. Somente consegue-se alternativas para identificar os casos através de procedimentos de comparação e medição de similaridades.
 
 \section{Ambiente Virtual de Aprendizagem}
-\lettrine{O}{s} AVA são espaços virtuais que permitem aos sujeitos envolvidos nos processos de ensino, aprendizagem e avaliação a busca por conhecimentos e capacitação (MACIEL, 2012). São projetados para facilitar o acesso a materiais de aprendizagem e a comunicação dos estudantes entre si e com os professores. Em resumo, refere-se a um espaço no qual
-ocorre a comunicação pedagógica em processos formativos semipresenciais ou a distância (ADELL; BELLVER; BELLVER, 2010). Segundo Almeida (2003), os ambientes virtuaispermitem integrar múltiplas mídias, linguagens e recursos, apresentar informações de maneira organizada e desenvolver interações entre pessoas. Oferecem possibilidades para
-a criação de espaços educacionais diferenciados que valorizam a participação do aluno de forma mais contextualizada e integrada aos objetivos de aprendizagem (KENSKY, 2007). 
+\lettrine{O}{s} AVA são espaços virtuais que permitem aos sujeitos envolvidos nos processos de ensino, aprendizagem e avaliação a busca por conhecimentos e capacitação \cite{maciel2012ambientes}. São projetados para facilitar o acesso a materiais de aprendizagem e a comunicação dos estudantes entre si e com os professores. Em resumo, refere-se a um espaço no qual ocorre a comunicação pedagógica em processos formativos semipresenciais ou a distância \cite{adell2010ambientes}. Segundo Almeida \cite{almeida2011educaccao}, os ambientes virtuais permitem integrar múltiplas mídias, linguagens e recursos, apresentar informações de maneira organizada e desenvolver interações entre pessoas. Oferecem possibilidades para a criação de espaços educacionais diferenciados que valorizam a participação do aluno de forma mais contextualizada e integrada aos objetivos de aprendizagem. 
 
-Dillenbourg, Schneider e Synteta (2002) destacam como característica relevante de um AVA o potencial para apoiar a interação social. Dentre os recursos que oferecem oportunidades para que isso se realize, o fórum é uma ferramenta que promove a atividade colaborativa, porque os participantes contribuem, na maioria das vezes, com o intuito de
-atingir o consenso ou uma definição sobre um tema (SOUZA, 2012); além disso, estimulam o diálogo, a comunicação e a socialização (OESTERREICH; MONTOLI, 2010). 
+Dillenbourg e grupo \cite{dillenbourg2002virtual} destacam como característica relevante de um AVA o potencial para apoiar a interação social. Dentre os recursos que oferecem oportunidades para que isso se realize, o fórum é uma ferramenta que promove a atividade colaborativa, porque os participantes contribuem, na maioria das vezes, com o intuito de atingir o consenso ou uma definição sobre um tema \cite{de2012aprendizagem} além disso, estimulam o diálogo, a comunicação e a socialização \cite{oesterreich2010potencialidades}.
 
-Existem várias ferramentas que auxiliam no uso de ambiente virtual de aprendizagem uma que se destaca é o Moodle, Moodle é uma plataforma de aprendizagem concebida para proporcionar aos educadores, administradores e alunos um único sistema robusto, seguro e integrado para criar ambientes de aprendizagem personalizados. (Moodle, 2017)
+Existem várias ferramentas que auxiliam no uso de ambiente virtual de aprendizagem uma que se destaca é o Moodle, Moodle é uma plataforma de aprendizagem concebida para proporcionar aos educadores, administradores e alunos um único sistema robusto, seguro e integrado para criar ambientes de aprendizagem personalizados \cite{Moodle}.
 
-O Moodle pode ser customizado e receber a identidade visual da instituição que o está utilizando. Por meio do Moodle, os professores têm a possibilidade de criar atividades individuais e coletivas, permitindo a interação com e entre os estudantes de forma síncrona e assíncrona. Além disso, os professores podem utilizar o ambiente para organizar os materiais educacionais e disponibilizar informações e orientações referentes à sua disciplina (Carvalho, 2008).
+O Moodle pode ser customizado e receber a identidade visual da instituição que o está utilizando. Por meio do Moodle, os professores têm a possibilidade de criar atividades individuais e coletivas, permitindo a interação com e entre os estudantes de forma síncrona e assíncrona. Além disso, os professores podem utilizar o ambiente para organizar os materiais educacionais e disponibilizar informações e orientações referentes à sua disciplina \cite{carvalho2008lms}.
 
-Historicamente o desenvolvimento da EAD acompanhou a evolução dos recursos tecnológicos, Mari (2011) citando Moore e Kearsley, destaca as 5 gerações da Ead:
+Historicamente o desenvolvimento da EAD acompanhou a evolução dos recursos tecnológicos, Mari \cite{mari2011avaliaccao} citando Moore e Kearsley, destaca as 5 gerações da Ead:
 \begin{itemize}
     \item Primeira geração: desenvolvida através dos estudos por correspondência;
     \item Segunda geração: caracterizada pelos cursos transmitidos por rádio e televisão;
@@ -78,15 +73,15 @@ Historicamente o desenvolvimento da EAD acompanhou a evolução dos recursos tec
 O avanço das TICs tem possibilitado a criação de ambientes virtuais de aprendizagem, potencializado pelos recursos da internet.
 
 \section{Educação Inclusiva de Deficientes Visuais}
-\lettrine{O} interesse pelo ensino inclusivo no Brasil tem sido crescente nos últimos anos, um direito das crianças e dos adolescentes com necessidades específicas à educação, o qual tem sido garantido desde a Declaração Universal dos Direitos Humanos, inerentes às condições físicas, intelectuais e sociais que a criança possua (UNESCO, 1994).
+\lettrine{O} interesse pelo ensino inclusivo no Brasil tem sido crescente nos últimos anos, um direito das crianças e dos adolescentes com necessidades específicas à educação, o qual tem sido garantido desde a Declaração Universal dos Direitos Humanos, inerentes às condições físicas, intelectuais e sociais que a criança possua \cite{de1994linha}.
 
-Conhecida também como cegueira possui algumas causas distintas em seres humanos. Segundo Domingos (2007), algumas das causas da deficiência visual em seres humanos são: retinopatia causada pela imaturidade da retina, catarata congênita, glaucoma, diabetes, traumas, entre outras causas não tão frequentes. Ainda de acordo com Domingos (2007), a perda total da visão pode ocorrer desde o nascimento ou em algum momento da vida através das causas acima citadas.
+Conhecida também como cegueira possui algumas causas distintas em seres humanos. Segundo Domingos \cite{domingos2008sexualidade}, algumas das causas da deficiência visual em seres humanos são: retinopatia causada pela imaturidade da retina, catarata congênita, glaucoma, diabetes, traumas, entre outras causas não tão frequentes. Ainda de acordo com Domingos \cite{domingos2008sexualidade}, a perda total da visão pode ocorrer desde o nascimento ou em algum momento da vida através das causas acima citadas.
 
-De acordo com Conde (2006), os portadores de deficiência visual podem ser divididos em dois grupos, classificados da seguinte forma: pessoas com cegueira e pessoa com baixa visão ou com visão subnormal.
+De acordo com Conde \cite{conde2007definindo}, os portadores de deficiência visual podem ser divididos em dois grupos, classificados da seguinte forma: pessoas com cegueira e pessoa com baixa visão ou com visão subnormal.
 
-A construção de práticas pedagógicas inclusivas, que promovam o acesso aos serviços e recursos pedagógicos e de acessibilidade, viabilizam a superação da discriminação e da segregação no contexto das Instituições de Ensino. De acordo com Saviani (2008), a partir do processo de democratização da educação se evidencia o paradoxo inclusão/exclusão, quando os sistemas de ensino universalizam o acesso, mas continuam excluindo indivíduos e grupos considerados fora dos padrões homogeneizadores da escola. "A construção de uma sociedade de plena participação e igualdade tem como um de seus princípios a interação efetiva de todos os cidadãos. Nesta perspectiva é fundamental a construção de políticas de inclusão para o reconhecimento da diferença e para desencadear uma revolução conceitual que conceba uma sociedade em que todos devem participar, com direito de igualdade e de acordo com suas especificidades". (Conforto `I\&'  Santarosa, 2002).
+A construção de práticas pedagógicas inclusivas, que promovam o acesso aos serviços e recursos pedagógicos e de acessibilidade, viabilizam a superação da discriminação e da segregação no contexto das Instituições de Ensino. De acordo com Saviani \cite{saviani2003pedagogia}, a partir do processo de democratização da educação se evidencia o paradoxo inclusão/exclusão, quando os sistemas de ensino universalizam o acesso, mas continuam excluindo indivíduos e grupos considerados fora dos padrões homogeneizadores da escola. "A construção de uma sociedade de plena participação e igualdade tem como um de seus princípios a interação efetiva de todos os cidadãos. Nesta perspectiva é fundamental a construção de políticas de inclusão para o reconhecimento da diferença e para desencadear uma revolução conceitual que conceba uma sociedade em que todos devem participar, com direito de igualdade e de acordo com suas especificidades" \cite{conforto2002acessibilidade}.
 
-Conforme Borges (1996) "uma pessoa cega pode ter algumas limitações, as quais poderão trazer obstáculos ao seu aproveitamento produtivo na sociedade". Ele aponta que grande parte destas limitações pode ser eliminada através de duas ações: uma educação adaptada a realidade destes sujeitos e o uso da tecnologia para diminuir as barreiras.
+Conforme Borges \cite{borges1996dosvox} "uma pessoa cega pode ter algumas limitações, as quais poderão trazer obstáculos ao seu aproveitamento produtivo na sociedade". Ele aponta que grande parte destas limitações pode ser eliminada através de duas ações: uma educação adaptada a realidade destes sujeitos e o uso da tecnologia para diminuir as barreiras.
 
 \section{Considerações finais}
-\lettrine{N}{o} que tange a deficiência visual, a importância dos Ambientes Digitais é inquestionável. De acordo com Campbell "desde a invenção do Código Braille em 1829, nada teve tanto impacto nos programas de educação, reabilitação e emprego quanto o recente desenvolvimento da Informática para os cegos" (CAMPBELL, 2001).
+\lettrine{N}{o} que tange a deficiência visual, a importância dos Ambientes Digitais é inquestionável. De acordo com Campbell \cite{campbell2001trabalho} "desde a invenção do Código Braille em 1829, nada teve tanto impacto nos programas de educação, reabilitação e emprego quanto o recente desenvolvimento da Informática para os cegos".
