@@ -13,9 +13,10 @@
 \usepackage[square,sort,nonamebreak,comma]{natbib}
 \usepackage{epstopdf}
 \usepackage{scalefnt}
-
+\usepackage{multirow}
 \newcommand{\tab}{\hspace*{0.5em}}
 \usepackage{float}
+\usepackage{tabularx}
 \usepackage{comment}
 \usepackage{booktabs}
 \usepackage{lscape}
@@ -23,10 +24,11 @@
     \renewcommand{\bibname}{Refer\^{e}ncias}
 }
 
+\newcommand{\minitab}[2][l]{\begin{tabular}{#1}#2\end{tabular}}
+
 \makelosymbols
 \makeloabbreviations
 \hypersetup{hidelinks}
-
 
 \begin{document}
 
@@ -51,12 +53,10 @@
 
 \maketitle
 
-
 \dedication{A Deus, \\ aos professores, \\ aos colegas de curso e \\ aos meus familiares.}
 
 \chapter*{Agradecimentos}
 Agradeço a Deus.
-
 
 \begin{abstract}
 Esta pesquisa investiga ... .
@@ -77,7 +77,7 @@ This research investigates ... .
 \tableofcontents
 \listoffigures
 \listoftables
-    
+
 \mainmatter
 
 \include{chapter/introducao}
